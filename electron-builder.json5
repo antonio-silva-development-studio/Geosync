@@ -33,7 +33,8 @@
   "publish": {
     "provider": "github",
     "owner": "antonio-silva-development-studio",
-    "repo": "Geosync"
+    "repo": "Geosync",
+    "releaseType": "release"
   },
   "mac": {
     "icon": "public/satellite.png",
