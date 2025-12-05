@@ -1,11 +1,9 @@
 import { create } from 'zustand';
-import type { Document, Environment, Organization, Project, VariableDefinition } from '../types';
+import type { Document, Environment, Organization, VariableDefinition } from '../types';
 
 interface AppState {
   organizations: Organization[];
   currentOrganization: Organization | null;
-  projects: Project[];
-  currentProject: Project | null;
   environments: Environment[];
   currentEnvironment: Environment | null;
   variables: VariableDefinition[];
@@ -17,13 +15,10 @@ interface AppState {
   // Actions
   setOrganizations: (orgs: Organization[]) => void;
   setCurrentOrganization: (org: Organization | null) => void;
-  setProjects: (projects: Project[]) => void;
-  setCurrentProject: (project: Project | null) => void;
   setEnvironments: (envs: Environment[]) => void;
   setCurrentEnvironment: (env: Environment | null) => void;
   setVariables: (vars: VariableDefinition[]) => void;
   setDocuments: (docs: Document[]) => void;
-  fetchProjects: (organizationId: string) => Promise<void>;
   fetchDocuments: (projectId: string) => Promise<void>;
   addDocument: (doc: Partial<Document>) => Promise<void>;
   updateDocument: (id: string, updates: Partial<Document>) => Promise<void>;
@@ -36,8 +31,6 @@ interface AppState {
 export const useAppStore = create<AppState>((set) => ({
   organizations: [],
   currentOrganization: null,
-  projects: [],
-  currentProject: null,
   environments: [],
   currentEnvironment: null,
   variables: [],
@@ -48,8 +41,6 @@ export const useAppStore = create<AppState>((set) => ({
 
   setOrganizations: (organizations) => set({ organizations }),
   setCurrentOrganization: (org) => set({ currentOrganization: org }),
-  setProjects: (projects) => set({ projects }),
-  setCurrentProject: (project) => set({ currentProject: project, activeView: 'project' }),
   setEnvironments: (environments) => set({ environments }),
   setCurrentEnvironment: (env) => set({ currentEnvironment: env }),
   setVariables: (variables) => set({ variables }),
@@ -57,15 +48,6 @@ export const useAppStore = create<AppState>((set) => ({
 
   setActiveView: (view) => set({ activeView: view }),
   setTheme: (theme) => set({ theme }),
-
-  fetchProjects: async (organizationId: string) => {
-    try {
-      const projects = await window.electronAPI.getProjects(organizationId);
-      set({ projects });
-    } catch (error) {
-      console.error('Failed to fetch projects:', error);
-    }
-  },
 
   fetchDocuments: async (projectId: string) => {
     try {

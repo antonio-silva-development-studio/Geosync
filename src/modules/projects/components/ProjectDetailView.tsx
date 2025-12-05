@@ -2,24 +2,25 @@ import { clsx } from 'clsx';
 import { Database, FileText, Layers } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
-import { useAppStore } from '../../store/useAppStore';
-import { EnvironmentView as EnvironmentManager } from '../environments/EnvironmentView';
-import { CollectionManager } from './CollectionManager';
-import { DocumentsView } from './DocumentsView';
+import type { Project } from '../../../types';
+import { EnvironmentView as EnvironmentManager } from '../../environments/EnvironmentView';
+import { CollectionManager } from '../CollectionManager';
+import { DocumentsView } from '../DocumentsView';
+
+interface ProjectDetailViewProps {
+  project: Project;
+}
 
 type Tab = 'documents' | 'environments' | 'collections';
 
-export const ProjectView: React.FC = () => {
-  const { currentProject } = useAppStore();
+export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ project }) => {
   const [activeTab, setActiveTab] = useState<Tab>('environments');
-
-  if (!currentProject) return null;
 
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="border-b bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-800">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{currentProject.name}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{project.name}</h1>
 
         {/* Tabs */}
         <div className="mt-6 flex items-center gap-4 border-b border-gray-200 dark:border-gray-700">

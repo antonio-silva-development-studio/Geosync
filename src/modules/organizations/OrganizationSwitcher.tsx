@@ -6,13 +6,8 @@ import { useAppStore } from '../../store/useAppStore';
 import type { Organization } from '../../types';
 
 export const OrganizationSwitcher: React.FC = () => {
-  const {
-    organizations,
-    currentOrganization,
-    setCurrentOrganization,
-    setOrganizations,
-    setProjects,
-  } = useAppStore();
+  const { organizations, currentOrganization, setCurrentOrganization, setOrganizations } =
+    useAppStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
@@ -57,10 +52,6 @@ export const OrganizationSwitcher: React.FC = () => {
   const handleSelectOrganization = async (org: Organization) => {
     setCurrentOrganization(org);
     setIsOpen(false);
-
-    // Refresh projects for the selected organization
-    const projects = await window.electronAPI.getProjects(org.id);
-    setProjects(projects);
   };
 
   return (

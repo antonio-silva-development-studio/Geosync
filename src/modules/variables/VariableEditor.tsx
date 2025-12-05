@@ -14,11 +14,12 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { useAppStore } from '../../store/useAppStore';
 import { useAuthStore } from '../auth/store';
+import { useProjectsStore } from '../projects/store';
 import { SecretsModal } from './SecretsModal';
 
 export const VariableEditor: React.FC = () => {
-  const { currentProject, currentEnvironment, environments, variables, setVariables } =
-    useAppStore();
+  const { currentEnvironment, environments, variables, setVariables } = useAppStore();
+  const { currentProject } = useProjectsStore();
   const { masterKey } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);

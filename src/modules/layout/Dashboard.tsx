@@ -3,12 +3,14 @@ import type React from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { UserMenu } from '../auth/UserMenu';
 import { OrganizationSwitcher } from '../organizations/OrganizationSwitcher';
-import { ProjectList } from '../projects/ProjectList';
-import { ProjectView } from '../projects/ProjectView';
+import { ProjectListContainer as ProjectList } from '../projects/ProjectListContainer';
+import { ProjectViewContainer as ProjectView } from '../projects/ProjectViewContainer';
+import { useProjectsStore } from '../projects/store';
 import { SettingsView } from '../settings/SettingsView';
 
 export const Dashboard: React.FC = () => {
-  const { currentProject, activeView } = useAppStore();
+  const { activeView } = useAppStore();
+  const { currentProject } = useProjectsStore();
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
