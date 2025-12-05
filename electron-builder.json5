@@ -65,8 +65,7 @@
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false,
-    "differentialPackage": false
+    "deleteAppDataOnUninstall": false
   },
   "linux": {
     "icon": "public/satellite.png",
@@ -75,7 +74,5 @@
     ],
     "artifactName": "${productName}-Linux-${version}.${ext}"
   },
-  "dmg": {
-    "writeUpdateInfo": false
-  }
+
 }
