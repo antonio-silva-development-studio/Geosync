@@ -6,15 +6,18 @@ import { MarkdownEditor } from './MarkdownEditor';
 import { Document } from '../types';
 
 export const DocumentsView: React.FC = () => {
-  const { currentProject, documents, addDocument, updateDocument, removeDocument } = useAppStore();
+  const { currentProject, documents, addDocument, updateDocument, removeDocument, fetchDocuments } = useAppStore();
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
   const [isDirty, setIsDirty] = useState(false);
 
-  // Mock loading documents for now (or use store if implemented)
-  // In a real app, we'd fetch from backend here.
-  // For now, we rely on the store's state.
+  // Fetch documents when project changes
+  useEffect(() => {
+    if (currentProject) {
+      fetchDocuments(currentProject.id);
+    }
+  }, [currentProject, fetchDocuments]);
 
   const selectedDoc = documents.find(d => d.id === selectedDocId);
 
@@ -26,7 +29,7 @@ export const DocumentsView: React.FC = () => {
     }
   }, [selectedDocId, documents]); // Re-run when selection changes or docs update
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!currentProject) return;
     const newDoc: Document = {
       id: crypto.randomUUID(),
@@ -36,13 +39,13 @@ export const DocumentsView: React.FC = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    addDocument(newDoc);
+    await addDocument(newDoc);
     setSelectedDocId(newDoc.id);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!selectedDoc) return;
-    updateDocument(selectedDoc.id, {
+    await updateDocument(selectedDoc.id, {
       title: editTitle,
       content: editContent,
       updatedAt: new Date().toISOString(),
@@ -50,10 +53,10 @@ export const DocumentsView: React.FC = () => {
     setIsDirty(false);
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to delete this document?')) {
-      removeDocument(id);
+      await removeDocument(id);
       if (selectedDocId === id) {
         setSelectedDocId(null);
       }

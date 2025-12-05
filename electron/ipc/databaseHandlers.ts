@@ -17,14 +17,52 @@ export function registerDatabaseHandlers() {
     });
   });
 
-  ipcMain.handle('db:verify-master-password', async (_, passwordHash) => {
+  ipcMain.handle('db:verify-master-password', async (_, hash) => {
     const config = await prisma.system.findUnique({ where: { id: 'config' } });
-    return config?.passwordHash === passwordHash;
+    if (config && config.passwordHash === hash) {
+      return {
+        valid: true,
+        user: {
+          name: config.name,
+          email: config.email,
+        }
+      };
+    }
+    return { valid: false };
+  });
+
+  ipcMain.handle('db:update-system-profile', async (_, data) => {
+    return await prisma.system.update({
+      where: { id: 'config' },
+      data,
+    });
+  });
+
+  ipcMain.handle('db:change-master-password', async (_, { oldHash, newHash }) => {
+    const config = await prisma.system.findUnique({ where: { id: 'config' } });
+    if (!config || config.passwordHash !== oldHash) {
+      throw new Error('Invalid current password');
+    }
+    await prisma.system.update({
+      where: { id: 'config' },
+      data: { passwordHash: newHash },
+    });
+    return true;
+  });
+
+  // Organization Handlers
+  ipcMain.handle('db:get-organizations', async () => {
+    return await prisma.organization.findMany();
+  });
+
+  ipcMain.handle('db:create-organization', async (_, data) => {
+    return await prisma.organization.create({ data });
   });
 
   // Project Handlers
-  ipcMain.handle('db:get-projects', async () => {
-    return await prisma.project.findMany();
+  ipcMain.handle('db:get-projects', async (_, organizationId) => {
+    if (!organizationId) return [];
+    return await prisma.project.findMany({ where: { organizationId } });
   });
 
   ipcMain.handle('db:create-project', async (_, data) => {
@@ -38,6 +76,17 @@ export function registerDatabaseHandlers() {
 
   ipcMain.handle('db:create-environment', async (_, data) => {
     return await prisma.environment.create({ data });
+  });
+
+  ipcMain.handle('db:update-environment', async (_, { id, data }) => {
+    return await prisma.environment.update({
+      where: { id },
+      data,
+    });
+  });
+
+  ipcMain.handle('db:delete-environment', async (_, id) => {
+    return await prisma.environment.delete({ where: { id } });
   });
 
   // Variable Handlers
@@ -93,5 +142,24 @@ export function registerDatabaseHandlers() {
         isOverridden: !!val,
       };
     });
+  });
+  // Document Handlers
+  ipcMain.handle('db:get-documents', async (_, projectId) => {
+    return await prisma.document.findMany({ where: { projectId } });
+  });
+
+  ipcMain.handle('db:create-document', async (_, data) => {
+    return await prisma.document.create({ data });
+  });
+
+  ipcMain.handle('db:update-document', async (_, { id, data }) => {
+    return await prisma.document.update({
+      where: { id },
+      data,
+    });
+  });
+
+  ipcMain.handle('db:delete-document', async (_, id) => {
+    return await prisma.document.delete({ where: { id } });
   });
 }

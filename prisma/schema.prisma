@@ -7,16 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Project {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  projects Project[]
+}
+
+model Project {
+  id             String   @id @default(uuid())
+  organizationId String?  // Optional for migration, but ideally required later
+  name           String
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization       Organization?   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   environments       Environment[]
   variableDefinitions VariableDefinition[]
   apiCollections     ApiCollection[]
+  documents          Document[]
 }
 
 model Environment {
@@ -73,9 +86,23 @@ model ApiCollection {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
+
+model Document {
+  id        String   @id @default(uuid())
+  projectId String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
 model System {
   id           String   @id @default("config")
   passwordHash String
+  name         String?  @default("User")
+  email        String?  @default("user@example.com")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

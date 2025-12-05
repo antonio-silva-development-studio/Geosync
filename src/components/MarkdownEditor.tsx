@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Markdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { clsx } from 'clsx';
 
 interface MarkdownEditorProps {
@@ -42,7 +43,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         </button>
       </div>
 
-      <div className="flex-1 bg-white dark:bg-gray-900">
+      <div className="flex-1 bg-white dark:bg-gray-900 min-h-0">
         {activeTab === 'write' ? (
           <textarea
             value={value}
@@ -51,8 +52,8 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             placeholder="Write your documentation here..."
           />
         ) : (
-          <div className="prose prose-sm h-full max-w-none overflow-auto p-4 dark:prose-invert">
-            <Markdown>{value || '*Nothing to preview*'}</Markdown>
+          <div className="prose prose-sm h-full max-w-none overflow-y-auto p-4 dark:prose-invert">
+            <Markdown rehypePlugins={[rehypeRaw]}>{value || '*Nothing to preview*'}</Markdown>
           </div>
         )}
       </div>

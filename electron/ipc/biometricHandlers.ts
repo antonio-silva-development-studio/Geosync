@@ -18,4 +18,8 @@ export function registerBiometricHandlers() {
   ipcMain.handle('bio:delete-secret', async () => {
     return await BiometricService.deleteSecret();
   });
+
+  ipcMain.handle('bio:authenticate', async () => {
+    return await BiometricService.authenticate();
+  });
 }

@@ -38,11 +38,7 @@ export const EnvironmentView: React.FC = () => {
     if (!currentProject || !currentEnvironment || !masterKey) return;
     setLoading(true);
     try {
-      const vars = await window.electronAPI.getVariables({
-        projectId: currentProject.id,
-        environmentId: currentEnvironment.id,
-        masterKey,
-      });
+      const vars = await window.electronAPI.getVariables(currentProject.id, currentEnvironment.id, masterKey);
       setVariables(vars);
     } catch (error) {
       console.error('Failed to load variables', error);
@@ -70,38 +66,41 @@ export const EnvironmentView: React.FC = () => {
     }
   };
 
-  const handleRenameEnv = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingEnvId || !editName.trim()) return;
+  const handleRenameEnv = async (envId: string, newName: string) => {
+    if (!newName.trim()) return;
 
-    // Mock rename for now as electronAPI might not have updateEnvironment yet
-    // Assuming we can update local state and maybe backend if supported
-    // If backend support is missing, this will just update UI until reload
-    // TODO: Add updateEnvironment to electronAPI
+    try {
+      await window.electronAPI.updateEnvironment(envId, { name: newName });
 
-    const updatedEnvs = environments.map(env =>
-      env.id === editingEnvId ? { ...env, name: editName } : env
-    );
-    setEnvironments(updatedEnvs);
+      const updatedEnvs = environments.map(env =>
+        env.id === envId ? { ...env, name: newName } : env
+      );
+      setEnvironments(updatedEnvs);
 
-    if (currentEnvironment?.id === editingEnvId) {
-      setCurrentEnvironment({ ...currentEnvironment, name: editName });
+      if (currentEnvironment?.id === envId) {
+        setCurrentEnvironment({ ...currentEnvironment, name: newName });
+      }
+    } catch (error) {
+      console.error('Failed to update environment', error);
+    } finally {
+      setEditingEnvId(null);
     }
-
-    setEditingEnvId(null);
   };
 
   const handleDeleteEnv = async (envId: string) => {
     if (!confirm('Are you sure you want to delete this environment?')) return;
 
-    // Mock delete for now
-    // TODO: Add deleteEnvironment to electronAPI
+    try {
+      await window.electronAPI.deleteEnvironment(envId);
 
-    const updatedEnvs = environments.filter(env => env.id !== envId);
-    setEnvironments(updatedEnvs);
+      const updatedEnvs = environments.filter(env => env.id !== envId);
+      setEnvironments(updatedEnvs);
 
-    if (currentEnvironment?.id === envId) {
-      setCurrentEnvironment(updatedEnvs.length > 0 ? updatedEnvs[0] : null);
+      if (currentEnvironment?.id === envId) {
+        setCurrentEnvironment(updatedEnvs.length > 0 ? updatedEnvs[0] : null);
+      }
+    } catch (error) {
+      console.error('Failed to delete environment', error);
     }
   };
 
@@ -134,19 +133,18 @@ export const EnvironmentView: React.FC = () => {
               ]}
             >
               {editingEnvId === env.id ? (
-                <form onSubmit={handleRenameEnv} className="inline-block">
-                  <input
-                    autoFocus
-                    type="text"
-                    className="w-24 rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    onBlur={() => setEditingEnvId(null)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') setEditingEnvId(null);
-                    }}
-                  />
-                </form>
+                <input
+                  autoFocus
+                  type="text"
+                  className="w-24 rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onBlur={() => handleRenameEnv(env.id, editName)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleRenameEnv(env.id, editName);
+                    if (e.key === 'Escape') setEditingEnvId(null);
+                  }}
+                />
               ) : (
                 <button
                   onClick={() => setCurrentEnvironment(env)}

@@ -35,11 +35,7 @@ export const EnvironmentManager: React.FC = () => {
     if (!currentProject || !currentEnvironment || !masterKey) return;
     setLoading(true);
     try {
-      const vars = await window.electronAPI.getVariables({
-        projectId: currentProject.id,
-        environmentId: currentEnvironment.id,
-        masterKey,
-      });
+      const vars = await window.electronAPI.getVariables(currentProject.id, currentEnvironment.id, masterKey);
       setVariables(vars);
     } catch (error) {
       console.error('Failed to load variables', error);

@@ -57,7 +57,7 @@ export const LoginScreen: React.FC = () => {
 
       // Use the hash as the encryption key (32 bytes when decoded from hex)
       // This ensures the key length is correct for AES-256
-      setAuthenticated(hashHex);
+      setAuthenticated(hashHex, 'password');
     } catch (err) {
       setError('Failed to create master password');
       console.error(err);
@@ -76,11 +76,11 @@ export const LoginScreen: React.FC = () => {
       const hashArray = Array.from(new Uint8Array(hash));
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-      const isValid = await window.electronAPI.verifyMasterPassword(hashHex);
+      const result = await window.electronAPI.verifyMasterPassword(hashHex);
 
-      if (isValid) {
+      if (result.valid) {
         // Use the hash as the encryption key
-        setAuthenticated(hashHex);
+        setAuthenticated(hashHex, 'password', result.user);
       } else {
         setError('Invalid password');
       }
@@ -101,9 +101,9 @@ export const LoginScreen: React.FC = () => {
         const hashArray = Array.from(new Uint8Array(hash));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        const isValid = await window.electronAPI.verifyMasterPassword(hashHex);
-        if (isValid) {
-          setAuthenticated(hashHex);
+        const result = await window.electronAPI.verifyMasterPassword(hashHex);
+        if (result.valid) {
+          setAuthenticated(hashHex, 'biometric', result.user);
         } else {
           setError('Biometric secret invalid or changed');
         }

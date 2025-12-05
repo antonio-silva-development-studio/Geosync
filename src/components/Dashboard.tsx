@@ -1,48 +1,28 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { Database, LogOut, Folder } from 'lucide-react';
+import { Folder } from 'lucide-react';
 import { ProjectView } from './ProjectView';
 import { ProjectList } from './ProjectList';
+import { OrganizationSwitcher } from './OrganizationSwitcher';
+import { UserMenu } from './UserMenu';
 
 export const Dashboard: React.FC = () => {
-  const { setProjects, currentProject, logout } = useAppStore();
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      const data = await window.electronAPI.getProjects();
-      setProjects(data);
-    } catch (error) {
-      console.error('Failed to load projects', error);
-    }
-  };
+  const { currentProject } = useAppStore();
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
-      <div className="w-64 flex-shrink-0 border-r bg-white dark:border-gray-700 dark:bg-gray-800">
-        <div className="flex h-16 items-center justify-between px-4 border-b dark:border-gray-700">
-          <div className="flex items-center gap-2 font-bold text-lg text-gray-900 dark:text-white">
-            <Database className="h-5 w-5 text-blue-600" />
-            GeoSync
-          </div>
+      <div className="w-64 flex-shrink-0 border-r bg-white dark:border-gray-700 dark:bg-gray-800 flex flex-col">
+        <div className="p-4 border-b dark:border-gray-700">
+          <OrganizationSwitcher />
         </div>
 
-        <div className="p-4">
+        <div className="flex-1 overflow-y-auto p-4">
           <ProjectList />
         </div>
 
-        <div className="absolute bottom-0 w-64 border-t p-4 dark:border-gray-700">
-          <button
-            onClick={logout}
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </button>
+        <div className="border-t p-4 dark:border-gray-700">
+          <UserMenu />
         </div>
       </div>
 

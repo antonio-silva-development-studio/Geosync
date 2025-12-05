@@ -6,27 +6,17 @@ import { clsx } from 'clsx';
 import { ContextMenu } from './ContextMenu';
 
 export const ProjectList: React.FC = () => {
-  const { projects, currentProject, setCurrentProject, setProjects } = useAppStore();
+  const { projects, currentProject, setCurrentProject, setProjects, currentOrganization, fetchProjects } = useAppStore();
   const [isCreating, setIsCreating] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProjectName.trim()) return;
-
-    try {
-      const newProject = await window.electronAPI.createProject({
-        name: newProjectName,
-        description: '',
-      });
-      setProjects([...projects, newProject]);
-      setNewProjectName('');
-      setIsCreating(false);
-      setCurrentProject(newProject);
-    } catch (error) {
-      console.error('Failed to create project', error);
+  React.useEffect(() => {
+    if (currentOrganization) {
+      fetchProjects(currentOrganization.id);
     }
-  };
+  }, [currentOrganization, fetchProjects]);
+
+
 
   const handleDeleteProject = async (projectId: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
@@ -42,6 +32,7 @@ export const ProjectList: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      {/* ... (header remains same) */}
       <div className="flex items-center justify-between">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
           Projects
@@ -56,7 +47,7 @@ export const ProjectList: React.FC = () => {
       </div>
 
       {isCreating && (
-        <form onSubmit={handleCreate} className="mb-2">
+        <div className="mb-2">
           <input
             autoFocus
             type="text"
@@ -65,8 +56,33 @@ export const ProjectList: React.FC = () => {
             value={newProjectName}
             onChange={(e) => setNewProjectName(e.target.value)}
             onBlur={() => !newProjectName && setIsCreating(false)}
+            onKeyDown={async (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!newProjectName.trim()) return;
+
+                try {
+                  const newProject = await window.electronAPI.createProject({
+                    name: newProjectName,
+                    description: '',
+                    organizationId: currentOrganization?.id,
+                  });
+                  setProjects([...projects, newProject]);
+                  setNewProjectName('');
+                  setIsCreating(false);
+                  setCurrentProject(newProject);
+                } catch (error) {
+                  console.error('Failed to create project', error);
+                  alert('Failed to create project: ' + (error as Error).message);
+                }
+              }
+              if (e.key === 'Escape') {
+                setIsCreating(false);
+                setNewProjectName('');
+              }
+            }}
           />
-        </form>
+        </div>
       )}
 
       <div className="space-y-1">

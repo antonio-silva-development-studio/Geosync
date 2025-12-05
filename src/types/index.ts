@@ -1,5 +1,14 @@
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Project {
   id: string;
+  organizationId?: string;
   name: string;
   description: string | null;
   createdAt: string;

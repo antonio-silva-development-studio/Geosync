@@ -49,4 +49,20 @@ export class BiometricService {
   static async deleteSecret(): Promise<boolean> {
     return await keytar.deletePassword(this.SERVICE_NAME, this.ACCOUNT_NAME);
   }
+  /**
+   * Prompts for biometric authentication without retrieving the secret.
+   */
+  static async authenticate(): Promise<boolean> {
+    if (process.platform === 'darwin') {
+      try {
+        await systemPreferences.promptTouchID('Authenticate to view secret');
+        return true;
+      } catch (error) {
+        console.error('Biometric prompt failed or cancelled', error);
+        return false;
+      }
+    }
+    // For other platforms, we assume true for now or implement specific logic
+    return true;
+  }
 }
