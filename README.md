@@ -18,9 +18,9 @@
 
 | Plataforma | Download |
 | :--- | :--- |
-| **macOS** (Apple Silicon/Intel) | [![Download macOS](https://img.shields.io/github/downloads/antonio-silva-development-studio/Geosync/latest/total?label=Download%20.dmg&logo=apple&color=white)](https://github.com/antonio-silva-development-studio/Geosync/releases/latest) |
-| **Windows** | [![Download Windows](https://img.shields.io/github/downloads/antonio-silva-development-studio/Geosync/latest/total?label=Download%20.exe&logo=windows&color=blue)](https://github.com/antonio-silva-development-studio/Geosync/releases/latest) |
-| **Linux** | [![Download Linux](https://img.shields.io/github/downloads/antonio-silva-development-studio/Geosync/latest/total?label=Download%20.AppImage&logo=linux&color=orange)](https://github.com/antonio-silva-development-studio/Geosync/releases/latest) |
+| **macOS** (Apple Silicon/Intel) | [![Download macOS](https://img.shields.io/badge/Download-.dmg-white?logo=apple)](https://github.com/antonio-silva-development-studio/Geosync/releases/latest) |
+| **Windows** | [![Download Windows](https://img.shields.io/badge/Download-.exe-blue?logo=windows)](https://github.com/antonio-silva-development-studio/Geosync/releases/latest) |
+| **Linux** | [![Download Linux](https://img.shields.io/badge/Download-.AppImage-orange?logo=linux)](https://github.com/antonio-silva-development-studio/Geosync/releases/latest) |
 
 > **Nota:** Os links acima redirecionam para a página da versão mais recente (Latest Release), onde você pode escolher o arquivo adequado para o seu sistema.
 
