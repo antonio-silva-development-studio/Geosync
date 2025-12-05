@@ -1,10 +1,7 @@
 import { create } from 'zustand';
-import { Project, Environment, VariableDefinition, Document, Organization } from '../types';
+import type { Document, Environment, Organization, Project, VariableDefinition } from '../types';
 
 interface AppState {
-  isAuthenticated: boolean;
-  masterKey: string | null; // Kept in memory only
-  userProfile: { name: string; email: string } | null;
   organizations: Organization[];
   currentOrganization: Organization | null;
   projects: Project[];
@@ -13,13 +10,11 @@ interface AppState {
   currentEnvironment: Environment | null;
   variables: VariableDefinition[];
   documents: Document[];
-  authMethod: 'password' | 'biometric' | null;
+
   activeView: 'project' | 'settings';
+  theme: 'light' | 'dark' | 'system';
 
   // Actions
-  setAuthenticated: (key: string, method: 'password' | 'biometric', user?: { name: string; email: string }) => void;
-  setUserProfile: (profile: { name: string; email: string }) => void;
-  logout: () => void;
   setOrganizations: (orgs: Organization[]) => void;
   setCurrentOrganization: (org: Organization | null) => void;
   setProjects: (projects: Project[]) => void;
@@ -33,13 +28,12 @@ interface AppState {
   addDocument: (doc: Partial<Document>) => Promise<void>;
   updateDocument: (id: string, updates: Partial<Document>) => Promise<void>;
   removeDocument: (id: string) => Promise<void>;
+
   setActiveView: (view: 'project' | 'settings') => void;
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  isAuthenticated: false,
-  masterKey: null,
-  userProfile: null,
   organizations: [],
   currentOrganization: null,
   projects: [],
@@ -48,26 +42,10 @@ export const useAppStore = create<AppState>((set) => ({
   currentEnvironment: null,
   variables: [],
   documents: [],
-  authMethod: null,
-  activeView: 'project',
 
-  setAuthenticated: (key, method, user) => set({
-    isAuthenticated: true,
-    masterKey: key,
-    authMethod: method,
-    userProfile: user || null
-  }),
-  setUserProfile: (profile) => set({ userProfile: profile }),
-  logout: () => set({
-    isAuthenticated: false,
-    masterKey: null,
-    authMethod: null,
-    userProfile: null,
-    currentOrganization: null,
-    currentProject: null,
-    currentEnvironment: null,
-    activeView: 'project'
-  }),
+  activeView: 'project',
+  theme: 'system',
+
   setOrganizations: (organizations) => set({ organizations }),
   setCurrentOrganization: (org) => set({ currentOrganization: org }),
   setProjects: (projects) => set({ projects }),
@@ -76,7 +54,9 @@ export const useAppStore = create<AppState>((set) => ({
   setCurrentEnvironment: (env) => set({ currentEnvironment: env }),
   setVariables: (variables) => set({ variables }),
   setDocuments: (documents) => set({ documents }),
+
   setActiveView: (view) => set({ activeView: view }),
+  setTheme: (theme) => set({ theme }),
 
   fetchProjects: async (organizationId: string) => {
     try {
@@ -114,7 +94,7 @@ export const useAppStore = create<AppState>((set) => ({
     try {
       await window.electronAPI.updateDocument(id, updates);
       set((state) => ({
-        documents: state.documents.map((d) => (d.id === id ? { ...d, ...updates } : d))
+        documents: state.documents.map((d) => (d.id === id ? { ...d, ...updates } : d)),
       }));
     } catch (error) {
       console.error('Failed to update document:', error);
@@ -125,7 +105,7 @@ export const useAppStore = create<AppState>((set) => ({
     try {
       await window.electronAPI.deleteDocument(id);
       set((state) => ({
-        documents: state.documents.filter((d) => d.id !== id)
+        documents: state.documents.filter((d) => d.id !== id),
       }));
     } catch (error) {
       console.error('Failed to delete document:', error);

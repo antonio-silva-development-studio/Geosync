@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface ContextMenuItem {
@@ -65,34 +66,38 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ children, items, class
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: context menu trigger
     <div onContextMenu={handleContextMenu} className={className}>
       {children}
-      {visible && createPortal(
-        <div
-          ref={menuRef}
-          className="fixed z-50 min-w-[160px] overflow-hidden rounded-md border bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
-          style={{ top: position.y, left: position.x }}
-        >
-          {items.map((item, index) => (
-            <button
-              key={index}
-              onClick={(e) => {
-                e.stopPropagation();
-                item.onClick();
-                setVisible(false);
-              }}
-              className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-left ${item.danger
-                  ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20'
-                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700'
+      {visible &&
+        createPortal(
+          <div
+            ref={menuRef}
+            className="fixed z-50 min-w-[160px] overflow-hidden rounded-md border bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+            style={{ top: position.y, left: position.x }}
+          >
+            {items.map((item) => (
+              <button
+                type="button"
+                key={item.label}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  item.onClick();
+                  setVisible(false);
+                }}
+                className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-left ${
+                  item.danger
+                    ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20'
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700'
                 }`}
-            >
-              {item.icon && <span className="h-4 w-4">{item.icon}</span>}
-              {item.label}
-            </button>
-          ))}
-        </div>,
-        document.body
-      )}
+              >
+                {item.icon && <span className="h-4 w-4">{item.icon}</span>}
+                {item.label}
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

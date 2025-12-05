@@ -1,16 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import { useAppStore } from '../store/useAppStore';
-import { Plus, FileText, Trash2, Save } from 'lucide-react';
 import { clsx } from 'clsx';
-import { MarkdownEditor } from './MarkdownEditor';
-import { Document } from '../types';
+import { FileText, Plus, Save, Trash2 } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { MarkdownEditor } from '../../shared/ui/MarkdownEditor';
+import { useAppStore } from '../../store/useAppStore';
+import type { Document } from '../../types';
+
+const DocumentEditor = ({ doc }: { doc: Document }) => {
+  const { updateDocument } = useAppStore();
+  const [editTitle, setEditTitle] = useState(doc.title);
+  const [editContent, setEditContent] = useState(doc.content);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const handleSave = async () => {
+    await updateDocument(doc.id, {
+      title: editTitle,
+      content: editContent,
+      updatedAt: new Date().toISOString(),
+    });
+    setIsDirty(false);
+  };
+
+  return (
+    <>
+      <div className="flex items-center justify-between border-b px-6 py-4 dark:border-gray-700">
+        <input
+          type="text"
+          value={editTitle}
+          onChange={(e) => {
+            setEditTitle(e.target.value);
+            setIsDirty(true);
+          }}
+          className="bg-transparent text-xl font-bold text-gray-900 focus:outline-none dark:text-white"
+          placeholder="Document Title"
+        />
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!isDirty}
+          className={clsx(
+            'flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            isDirty
+              ? 'bg-blue-600 text-white hover:bg-blue-500'
+              : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600',
+          )}
+        >
+          <Save className="h-4 w-4" />
+          Save
+        </button>
+      </div>
+      <div className="flex-1 overflow-hidden p-6">
+        <MarkdownEditor
+          value={editContent}
+          onChange={(val) => {
+            setEditContent(val);
+            setIsDirty(true);
+          }}
+          className="h-full"
+        />
+      </div>
+    </>
+  );
+};
 
 export const DocumentsView: React.FC = () => {
-  const { currentProject, documents, addDocument, updateDocument, removeDocument, fetchDocuments } = useAppStore();
+  const { currentProject, documents, addDocument, removeDocument, fetchDocuments } = useAppStore();
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editContent, setEditContent] = useState('');
-  const [isDirty, setIsDirty] = useState(false);
 
   // Fetch documents when project changes
   useEffect(() => {
@@ -19,15 +74,7 @@ export const DocumentsView: React.FC = () => {
     }
   }, [currentProject, fetchDocuments]);
 
-  const selectedDoc = documents.find(d => d.id === selectedDocId);
-
-  useEffect(() => {
-    if (selectedDoc) {
-      setEditTitle(selectedDoc.title);
-      setEditContent(selectedDoc.content);
-      setIsDirty(false);
-    }
-  }, [selectedDocId, documents]); // Re-run when selection changes or docs update
+  const selectedDoc = documents.find((d) => d.id === selectedDocId);
 
   const handleCreate = async () => {
     if (!currentProject) return;
@@ -41,16 +88,6 @@ export const DocumentsView: React.FC = () => {
     };
     await addDocument(newDoc);
     setSelectedDocId(newDoc.id);
-  };
-
-  const handleSave = async () => {
-    if (!selectedDoc) return;
-    await updateDocument(selectedDoc.id, {
-      title: editTitle,
-      content: editContent,
-      updatedAt: new Date().toISOString(),
-    });
-    setIsDirty(false);
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
@@ -72,6 +109,7 @@ export const DocumentsView: React.FC = () => {
             Documents
           </h2>
           <button
+            type="button"
             onClick={handleCreate}
             className="rounded p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
             title="New Document"
@@ -81,14 +119,15 @@ export const DocumentsView: React.FC = () => {
         </div>
         <div className="p-2 space-y-1">
           {documents.map((doc) => (
-            <div
+            <button
+              type="button"
               key={doc.id}
               onClick={() => setSelectedDocId(doc.id)}
               className={clsx(
-                "group flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors",
-                selectedDocId === doc.id
-                  ? "bg-white text-blue-600 shadow-sm dark:bg-gray-700 dark:text-blue-400"
-                  : "text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+                'flex w-full items-center justify-between rounded-md p-2 text-sm transition-colors',
+                selectedDoc?.id === doc.id
+                  ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
+                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
               )}
             >
               <div className="flex items-center gap-2 overflow-hidden">
@@ -96,12 +135,13 @@ export const DocumentsView: React.FC = () => {
                 <span className="truncate">{doc.title}</span>
               </div>
               <button
+                type="button"
                 onClick={(e) => handleDelete(doc.id, e)}
                 className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500"
               >
                 <Trash2 className="h-3 w-3" />
               </button>
-            </div>
+            </button>
           ))}
           {documents.length === 0 && (
             <div className="px-4 py-8 text-center text-xs text-gray-500 dark:text-gray-400">
@@ -114,43 +154,7 @@ export const DocumentsView: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col bg-white dark:bg-gray-900">
         {selectedDoc ? (
-          <>
-            <div className="flex items-center justify-between border-b px-6 py-4 dark:border-gray-700">
-              <input
-                type="text"
-                value={editTitle}
-                onChange={(e) => {
-                  setEditTitle(e.target.value);
-                  setIsDirty(true);
-                }}
-                className="bg-transparent text-xl font-bold text-gray-900 focus:outline-none dark:text-white"
-                placeholder="Document Title"
-              />
-              <button
-                onClick={handleSave}
-                disabled={!isDirty}
-                className={clsx(
-                  "flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                  isDirty
-                    ? "bg-blue-600 text-white hover:bg-blue-500"
-                    : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600"
-                )}
-              >
-                <Save className="h-4 w-4" />
-                Save
-              </button>
-            </div>
-            <div className="flex-1 overflow-hidden p-6">
-              <MarkdownEditor
-                value={editContent}
-                onChange={(val) => {
-                  setEditContent(val);
-                  setIsDirty(true);
-                }}
-                className="h-full"
-              />
-            </div>
-          </>
+          <DocumentEditor key={selectedDoc.id} doc={selectedDoc} />
         ) : (
           <div className="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">
             <div className="text-center">

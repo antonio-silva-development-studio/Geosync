@@ -1,13 +1,12 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
-export class EncryptionService {
-  private static readonly ALGORITHM = 'aes-256-gcm';
-  private static readonly SALT_LENGTH = 64;
-  private static readonly IV_LENGTH = 16;
-  // private static readonly TAG_LENGTH = 16; // Default is 16
-  private static readonly ITERATIONS = 100000;
-  private static readonly KEY_LENGTH = 32;
-  private static readonly DIGEST = 'sha512';
+export const EncryptionService = {
+  ALGORITHM: 'aes-256-gcm',
+  SALT_LENGTH: 64,
+  IV_LENGTH: 16,
+  ITERATIONS: 100000,
+  KEY_LENGTH: 32,
+  DIGEST: 'sha512',
 
   /**
    * Derives a 32-byte key from the master password using PBKDF2.
@@ -15,23 +14,23 @@ export class EncryptionService {
    * @param salt The salt (hex string)
    * @returns The derived key (Buffer)
    */
-  static deriveKey(password: string, salt: string): Buffer {
+  deriveKey(password: string, salt: string): Buffer {
     return crypto.pbkdf2Sync(
       password,
       Buffer.from(salt, 'hex'),
-      this.ITERATIONS,
-      this.KEY_LENGTH,
-      this.DIGEST
+      EncryptionService.ITERATIONS,
+      EncryptionService.KEY_LENGTH,
+      EncryptionService.DIGEST,
     );
-  }
+  },
 
   /**
    * Generates a random salt.
    * @returns Hex string of the salt
    */
-  static generateSalt(): string {
-    return crypto.randomBytes(this.SALT_LENGTH).toString('hex');
-  }
+  generateSalt(): string {
+    return crypto.randomBytes(EncryptionService.SALT_LENGTH).toString('hex');
+  },
 
   /**
    * Encrypts text using AES-256-GCM.
@@ -39,9 +38,10 @@ export class EncryptionService {
    * @param key The derived key (Buffer)
    * @returns Encrypted string format: "iv:authTag:encryptedData" (all hex)
    */
-  static encrypt(text: string, key: Buffer): string {
-    const iv = crypto.randomBytes(this.IV_LENGTH);
-    const cipher = crypto.createCipheriv(this.ALGORITHM, key, iv);
+  encrypt(text: string, key: Buffer): string {
+    const iv = crypto.randomBytes(EncryptionService.IV_LENGTH);
+    // biome-ignore lint/suspicious/noExplicitAny: crypto types workaround
+    const cipher = crypto.createCipheriv(EncryptionService.ALGORITHM, key, iv) as any;
 
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
@@ -49,7 +49,7 @@ export class EncryptionService {
     const authTag = cipher.getAuthTag();
 
     return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
-  }
+  },
 
   /**
    * Decrypts text using AES-256-GCM.
@@ -57,16 +57,17 @@ export class EncryptionService {
    * @param key The derived key (Buffer)
    * @returns Decrypted text
    */
-  static decrypt(encryptedText: string, key: Buffer): string {
+  decrypt(encryptedText: string, key: Buffer): string {
     const [ivHex, authTagHex, encryptedHex] = encryptedText.split(':');
 
-    if (!ivHex || !authTagHex || !encryptedHex) {
+    if (!ivHex || !authTagHex || encryptedHex === undefined) {
       throw new Error('Invalid encrypted text format');
     }
 
     const iv = Buffer.from(ivHex, 'hex');
     const authTag = Buffer.from(authTagHex, 'hex');
-    const decipher = crypto.createDecipheriv(this.ALGORITHM, key, iv);
+    // biome-ignore lint/suspicious/noExplicitAny: crypto types workaround
+    const decipher = crypto.createDecipheriv(EncryptionService.ALGORITHM, key, iv) as any;
 
     decipher.setAuthTag(authTag);
 
@@ -74,5 +75,5 @@ export class EncryptionService {
     decrypted += decipher.final('utf8');
 
     return decrypted;
-  }
-}
+  },
+};

@@ -1,11 +1,11 @@
-import React from 'react';
-import { useAppStore } from '../store/useAppStore';
 import { Folder } from 'lucide-react';
-import { ProjectView } from './ProjectView';
-import { ProjectList } from './ProjectList';
-import { OrganizationSwitcher } from './OrganizationSwitcher';
-import { UserMenu } from './UserMenu';
-import { SettingsView } from './SettingsView';
+import type React from 'react';
+import { useAppStore } from '../../store/useAppStore';
+import { UserMenu } from '../auth/UserMenu';
+import { OrganizationSwitcher } from '../organizations/OrganizationSwitcher';
+import { ProjectList } from '../projects/ProjectList';
+import { ProjectView } from '../projects/ProjectView';
+import { SettingsView } from '../settings/SettingsView';
 
 export const Dashboard: React.FC = () => {
   const { currentProject, activeView } = useAppStore();

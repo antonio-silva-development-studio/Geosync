@@ -1,23 +1,55 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.antonios.geosync",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "GeoSync",
+  "copyright": "Copyright © 2025 Antonio S.",
   "directories": {
     "output": "release/${version}"
   },
   "files": [
     "dist",
-    "dist-electron"
+    "dist-electron",
+    "package.json",
+    "!node_modules/.prisma/**/*",
+    "!node_modules/@prisma/client/**/*"
   ],
+  "asarUnpack": [],
+  "extraResources": [
+    {
+      "from": "node_modules/.prisma",
+      "to": "node_modules/.prisma"
+    },
+    {
+      "from": "node_modules/@prisma/client",
+      "to": "node_modules/@prisma/client"
+    },
+    {
+      "from": "prisma/skeleton.db",
+      "to": "skeleton.db"
+    }
+  ],
+  "publish": {
+    "provider": "github",
+    "owner": "antonio-silva-development-studio",
+    "repo": "Geosync"
+  },
   "mac": {
+    "icon": "public/satellite.png",
     "target": [
-      "dmg"
+      {
+        "target": "dmg",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      }
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}-${arch}.${ext}"
   },
   "win": {
+    "icon": "public/satellite.png",
     "target": [
       {
         "target": "nsis",
@@ -35,6 +67,7 @@
     "deleteAppDataOnUninstall": false
   },
   "linux": {
+    "icon": "public/satellite.png",
     "target": [
       "AppImage"
     ],

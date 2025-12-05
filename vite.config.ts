@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import path from 'node:path'
-import electron from 'vite-plugin-electron/simple'
-import react from '@vitejs/plugin-react'
+import path from 'node:path';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import electron from 'vite-plugin-electron/simple';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,12 +15,7 @@ export default defineConfig({
           build: {
             rollupOptions: {
               // Externalize native modules and Prisma to avoid bundling issues
-              external: [
-                'keytar',
-                'electron-store',
-                '@prisma/client',
-                '.prisma/client',
-              ],
+              external: ['keytar', 'electron-store', '@prisma/client', '.prisma/client'],
             },
           },
         },
@@ -30,9 +25,7 @@ export default defineConfig({
         input: path.join(__dirname, 'electron/preload.ts'),
       },
       // Ployfill the Electron and Node.js API for Renderer process.
-      renderer: process.env.NODE_ENV === 'test'
-        ? undefined
-        : {},
+      renderer: process.env.NODE_ENV === 'test' ? undefined : {},
     }),
   ],
-})
+});

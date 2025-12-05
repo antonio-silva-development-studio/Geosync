@@ -1,0 +1,9 @@
+src/index.css
+./src/index.css
+**/src/index.css
+index.css
+**/index.css
+dist
+dist-electron
+node_modules
+coverage

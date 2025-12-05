@@ -1,48 +1,62 @@
-import React, { useEffect, useState } from 'react';
-import { useAppStore } from '../store/useAppStore';
-import { Plus } from 'lucide-react';
 import { clsx } from 'clsx';
-import { VariableEditor } from './VariableEditor';
+import { Plus } from 'lucide-react';
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useAppStore } from '../../store/useAppStore';
+import { useAuthStore } from '../auth/store';
+import { VariableEditor } from '../variables/VariableEditor';
 
 export const EnvironmentManager: React.FC = () => {
-  const { currentProject, environments, setEnvironments, currentEnvironment, setCurrentEnvironment, setVariables, masterKey } = useAppStore();
+  const {
+    currentProject,
+    environments,
+    setEnvironments,
+    currentEnvironment,
+    setCurrentEnvironment,
+    setVariables,
+  } = useAppStore();
+  const { masterKey } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [newEnvName, setNewEnvName] = useState('');
   const [isCreatingEnv, setIsCreatingEnv] = useState(false);
 
-  useEffect(() => {
-    if (currentProject) {
-      loadEnvironments();
-    }
-  }, [currentProject]);
-
-  useEffect(() => {
-    if (currentProject && currentEnvironment && masterKey) {
-      loadVariables();
-    }
-  }, [currentProject, currentEnvironment, masterKey]);
-
-  const loadEnvironments = async () => {
+  const loadEnvironments = useCallback(async () => {
     if (!currentProject) return;
     const envs = await window.electronAPI.getEnvironments(currentProject.id);
     setEnvironments(envs);
     if (envs.length > 0 && !currentEnvironment) {
       setCurrentEnvironment(envs[0]);
     }
-  };
+  }, [currentProject, setEnvironments, currentEnvironment, setCurrentEnvironment]);
 
-  const loadVariables = async () => {
+  const loadVariables = useCallback(async () => {
     if (!currentProject || !currentEnvironment || !masterKey) return;
     setLoading(true);
     try {
-      const vars = await window.electronAPI.getVariables(currentProject.id, currentEnvironment.id, masterKey);
+      const vars = await window.electronAPI.getVariables(
+        currentProject.id,
+        currentEnvironment.id,
+        masterKey,
+      );
       setVariables(vars);
     } catch (error) {
       console.error('Failed to load variables', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentProject, currentEnvironment, masterKey, setVariables]);
+
+  useEffect(() => {
+    if (currentProject) {
+      loadEnvironments();
+    }
+  }, [currentProject, loadEnvironments]);
+
+  useEffect(() => {
+    if (currentProject && currentEnvironment && masterKey) {
+      loadVariables();
+    }
+  }, [currentProject, currentEnvironment, masterKey, loadVariables]);
 
   const handleCreateEnv = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,13 +84,14 @@ export const EnvironmentManager: React.FC = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
           {environments.map((env) => (
             <button
+              type="button"
               key={env.id}
               onClick={() => setCurrentEnvironment(env)}
               className={clsx(
                 'whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                 currentEnvironment?.id === env.id
                   ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700',
               )}
             >
               {env.name}
@@ -86,6 +101,7 @@ export const EnvironmentManager: React.FC = () => {
           {isCreatingEnv ? (
             <form onSubmit={handleCreateEnv} className="flex items-center gap-2">
               <input
+                // biome-ignore lint/a11y/noAutofocus: UX requirement
                 autoFocus
                 type="text"
                 className="w-32 rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -97,6 +113,7 @@ export const EnvironmentManager: React.FC = () => {
             </form>
           ) : (
             <button
+              type="button"
               onClick={() => setIsCreatingEnv(true)}
               className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
             >

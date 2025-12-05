@@ -1,16 +1,39 @@
-import React from 'react'
-import { useAppStore } from './store/useAppStore'
-import { LoginScreen } from './components/LoginScreen'
-import { Dashboard } from './components/Dashboard'
+import React from 'react';
+import { Toaster } from 'sonner';
+import { LoginContainer } from './modules/auth/LoginContainer';
+import { useAuthStore } from './modules/auth/store';
+import { Dashboard } from './modules/layout/Dashboard';
+import { useAppStore } from './store/useAppStore';
 
 function App() {
-  const isAuthenticated = useAppStore((state) => state.isAuthenticated)
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const theme = useAppStore((state) => state.theme);
+
+  React.useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      root.classList.add(systemTheme);
+      return;
+    }
+
+    root.classList.add(theme);
+  }, [theme]);
 
   if (!isAuthenticated) {
-    return <LoginScreen />
+    return <LoginContainer />;
   }
 
-  return <Dashboard />;
+  return (
+    <>
+      <Toaster position="top-right" richColors />
+      <Dashboard />
+    </>
+  );
 }
 
-export default App
+export default App;

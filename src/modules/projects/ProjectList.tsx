@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-// Component for listing projects
-import { useAppStore } from '../store/useAppStore';
-import { Plus, Folder, FolderOpen, Trash2 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { ContextMenu } from './ContextMenu';
+import { Folder, FolderOpen, Plus, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { ContextMenu } from '../../shared/ui/ContextMenu';
+// Component for listing projects
+import { useAppStore } from '../../store/useAppStore';
 
 export const ProjectList: React.FC = () => {
-  const { projects, currentProject, setCurrentProject, setProjects, currentOrganization, fetchProjects } = useAppStore();
+  const {
+    projects,
+    currentProject,
+    setCurrentProject,
+    setProjects,
+    currentOrganization,
+    fetchProjects,
+  } = useAppStore();
   const [isCreating, setIsCreating] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
 
@@ -16,23 +24,22 @@ export const ProjectList: React.FC = () => {
     }
   }, [currentOrganization, fetchProjects]);
 
-
-
   const handleDeleteProject = async (projectId: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
 
     try {
       await window.electronAPI.deleteProject(projectId);
 
-      const updatedProjects = projects.filter(p => p.id !== projectId);
+      const updatedProjects = projects.filter((p) => p.id !== projectId);
       setProjects(updatedProjects);
 
       if (currentProject?.id === projectId) {
         setCurrentProject(null);
       }
+      toast.success('Project deleted successfully');
     } catch (error) {
       console.error('Failed to delete project', error);
-      alert('Failed to delete project');
+      toast.error('Failed to delete project');
     }
   };
 
@@ -44,6 +51,7 @@ export const ProjectList: React.FC = () => {
           Projects
         </h2>
         <button
+          type="button"
           onClick={() => setIsCreating(true)}
           className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
           title="New Project"
@@ -55,7 +63,6 @@ export const ProjectList: React.FC = () => {
       {isCreating && (
         <div className="mb-2">
           <input
-            autoFocus
             type="text"
             className="w-full rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             placeholder="Project Name"
@@ -77,9 +84,10 @@ export const ProjectList: React.FC = () => {
                   setNewProjectName('');
                   setIsCreating(false);
                   setCurrentProject(newProject);
+                  toast.success('Project created successfully');
                 } catch (error) {
                   console.error('Failed to create project', error);
-                  alert('Failed to create project: ' + (error as Error).message);
+                  toast.error(`Failed to create project: ${(error as Error).message}`);
                 }
               }
               if (e.key === 'Escape') {
@@ -100,17 +108,18 @@ export const ProjectList: React.FC = () => {
                 label: 'Delete',
                 icon: <Trash2 className="h-4 w-4" />,
                 danger: true,
-                onClick: () => handleDeleteProject(project.id)
-              }
+                onClick: () => handleDeleteProject(project.id),
+              },
             ]}
           >
             <button
+              type="button"
               onClick={() => setCurrentProject(project)}
               className={clsx(
                 'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                 currentProject?.id === project.id
                   ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
-                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
               )}
             >
               {currentProject?.id === project.id ? (

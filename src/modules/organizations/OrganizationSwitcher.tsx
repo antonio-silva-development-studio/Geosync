@@ -1,27 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { useAppStore } from '../store/useAppStore';
-import { ChevronDown, Plus, Building2, Check } from 'lucide-react';
-
+import { Building2, Check, ChevronDown, Plus } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useAppStore } from '../../store/useAppStore';
+import type { Organization } from '../../types';
 
 export const OrganizationSwitcher: React.FC = () => {
-  const { organizations, currentOrganization, setCurrentOrganization, setOrganizations, setProjects } = useAppStore();
+  const {
+    organizations,
+    currentOrganization,
+    setCurrentOrganization,
+    setOrganizations,
+    setProjects,
+  } = useAppStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
 
   useEffect(() => {
+    const loadOrganizations = async () => {
+      const orgs = await window.electronAPI.getOrganizations();
+      setOrganizations(orgs);
+
+      // Select first org if none selected and orgs exist
+      if (!currentOrganization && orgs.length > 0) {
+        setCurrentOrganization(orgs[0]);
+      }
+    };
     loadOrganizations();
-  }, []);
-
-  const loadOrganizations = async () => {
-    const orgs = await window.electronAPI.getOrganizations();
-    setOrganizations(orgs);
-
-    // Select first org if none selected and orgs exist
-    if (!currentOrganization && orgs.length > 0) {
-      setCurrentOrganization(orgs[0]);
-    }
-  };
+  }, [currentOrganization, setOrganizations, setCurrentOrganization]);
 
   const handleCreateOrganization = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +47,14 @@ export const OrganizationSwitcher: React.FC = () => {
       setNewOrgName('');
       setIsCreating(false);
       setIsOpen(false);
+      toast.success('Organization created successfully');
     } catch (error) {
       console.error('Failed to create organization', error);
-      alert('Failed to create organization: ' + (error as Error).message);
+      toast.error(`Failed to create organization: ${(error as Error).message}`);
     }
   };
 
-  const handleSelectOrganization = async (org: any) => {
+  const handleSelectOrganization = async (org: Organization) => {
     setCurrentOrganization(org);
     setIsOpen(false);
 
@@ -58,16 +66,19 @@ export const OrganizationSwitcher: React.FC = () => {
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg bg-gray-800 p-2 text-left text-sm font-medium text-white hover:bg-gray-700 focus:outline-none"
+        className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white p-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
       >
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white">
             <Building2 className="h-5 w-5" />
           </div>
           <div>
-            <div className="font-semibold">{currentOrganization?.name || 'Select Organization'}</div>
-            <div className="text-xs text-gray-400">Enterprise</div>
+            <div className="font-semibold">
+              {currentOrganization?.name || 'Select Organization'}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Enterprise</div>
           </div>
         </div>
         <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -75,19 +86,25 @@ export const OrganizationSwitcher: React.FC = () => {
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-lg border border-gray-700 bg-gray-900 shadow-xl">
+          <button
+            type="button"
+            className="fixed inset-0 z-10 cursor-default bg-transparent"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+          />
+          <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
             <div className="p-2">
               <div className="mb-2 px-2 text-xs font-semibold text-gray-500">Organizations</div>
               <div className="space-y-1">
                 {organizations.map((org) => (
                   <button
+                    type="button"
                     key={org.id}
                     onClick={() => handleSelectOrganization(org)}
-                    className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white"
+                    className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-800">
+                      <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-100 dark:bg-gray-800">
                         <Building2 className="h-3 w-3" />
                       </div>
                       {org.name}
@@ -99,15 +116,14 @@ export const OrganizationSwitcher: React.FC = () => {
                 ))}
               </div>
 
-              <div className="my-2 border-t border-gray-700" />
+              <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
 
               {isCreating ? (
                 <form onSubmit={handleCreateOrganization} className="px-2 py-1">
                   <input
-                    autoFocus
                     type="text"
                     placeholder="Organization Name"
-                    className="w-full rounded-md border-gray-700 bg-gray-800 px-2 py-1 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                     value={newOrgName}
                     onChange={(e) => setNewOrgName(e.target.value)}
                     onKeyDown={(e) => {
@@ -125,7 +141,7 @@ export const OrganizationSwitcher: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setIsCreating(false)}
-                      className="text-xs text-gray-400 hover:text-white"
+                      className="text-xs text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     >
                       Cancel
                     </button>
@@ -139,8 +155,9 @@ export const OrganizationSwitcher: React.FC = () => {
                 </form>
               ) : (
                 <button
+                  type="button"
                   onClick={() => setIsCreating(true)}
-                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-400 hover:bg-gray-800 hover:text-white"
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
                 >
                   <Plus className="h-4 w-4" />
                   Add Organization
