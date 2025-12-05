@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { MarkdownEditor } from '../../shared/ui/MarkdownEditor';
 import { useAppStore } from '../../store/useAppStore';
 import type { Document } from '../../types';
+import { useProjectsStore } from '../projects/store';
 
 const DocumentEditor = ({ doc }: { doc: Document }) => {
   const { updateDocument } = useAppStore();
@@ -64,7 +65,8 @@ const DocumentEditor = ({ doc }: { doc: Document }) => {
 };
 
 export const DocumentsView: React.FC = () => {
-  const { currentProject, documents, addDocument, removeDocument, fetchDocuments } = useAppStore();
+  const { documents, addDocument, removeDocument, fetchDocuments } = useAppStore();
+  const { currentProject } = useProjectsStore();
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
 
   // Fetch documents when project changes

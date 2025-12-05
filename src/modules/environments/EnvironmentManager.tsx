@@ -4,17 +4,13 @@ import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useAuthStore } from '../auth/store';
+import { useProjectsStore } from '../projects/store';
 import { VariableEditor } from '../variables/VariableEditor';
 
 export const EnvironmentManager: React.FC = () => {
-  const {
-    currentProject,
-    environments,
-    setEnvironments,
-    currentEnvironment,
-    setCurrentEnvironment,
-    setVariables,
-  } = useAppStore();
+  const { environments, setEnvironments, currentEnvironment, setCurrentEnvironment, setVariables } =
+    useAppStore();
+  const { currentProject } = useProjectsStore();
   const { masterKey } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [newEnvName, setNewEnvName] = useState('');
