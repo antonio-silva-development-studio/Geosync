@@ -177,52 +177,52 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
             </div>
 
             {/* Variables List */}
-            <div className="space-y-3">
-              <div className="grid grid-cols-[1fr,1fr,auto] gap-4 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                <div>Key</div>
-                <div>Value</div>
-                <div className="w-8"></div>
-              </div>
-
+            <div className="space-y-4">
               {rows.map((row, index) => (
-                <div key={row.id} className="group grid grid-cols-[1fr,1fr,auto] gap-4 items-start">
-                  <input
-                    type="text"
-                    placeholder="KEY"
-                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-mono placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                    value={row.key}
-                    onChange={(e) => updateRow(row.id, 'key', e.target.value)}
-                    onPaste={(e) => handlePaste(e, row.id)}
-                    autoFocus={index === rows.length - 1 && rows.length > 1}
-                  />
+                <div key={row.id} className="group relative rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Key</label>
+                      <input
+                        type="text"
+                        placeholder="KEY"
+                        className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-mono placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        value={row.key}
+                        onChange={(e) => updateRow(row.id, 'key', e.target.value)}
+                        onPaste={(e) => handlePaste(e, row.id)}
+                        autoFocus={index === rows.length - 1 && rows.length > 1}
+                      />
+                    </div>
 
-                  <div className="relative">
-                    <input
-                      type={showValues[row.id] ? "text" : "password"}
-                      placeholder="Value"
-                      className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-sm font-mono placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                      value={row.value}
-                      onChange={(e) => updateRow(row.id, 'value', e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowValues(prev => ({ ...prev, [row.id]: !prev[row.id] }))}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                    >
-                      {showValues[row.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Value</label>
+                      <div className="relative">
+                        <input
+                          type={showValues[row.id] ? "text" : "password"}
+                          placeholder="Value"
+                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-sm font-mono placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                          value={row.value}
+                          onChange={(e) => updateRow(row.id, 'value', e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowValues(prev => ({ ...prev, [row.id]: !prev[row.id] }))}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        >
+                          {showValues[row.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => removeRow(row.id)}
-                      className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
-                      title="Remove"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeRow(row.id)}
+                    className="absolute -right-2 -top-2 rounded-full bg-white p-1 text-gray-400 shadow-sm ring-1 ring-gray-200 hover:bg-red-50 hover:text-red-600 dark:bg-gray-800 dark:ring-gray-700 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                    title="Remove"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               ))}
             </div>

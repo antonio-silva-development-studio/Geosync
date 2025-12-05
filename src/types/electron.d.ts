@@ -10,12 +10,14 @@ export interface IElectronAPI {
   createOrganization: (data: any) => Promise<any>;
   getProjects: (organizationId: string) => Promise<any[]>;
   createProject: (data: any) => Promise<any>;
+  deleteProject: (id: string) => Promise<any>;
   getEnvironments: (projectId: string) => Promise<any[]>;
   createEnvironment: (data: any) => Promise<any>;
   updateEnvironment: (id: string, data: any) => Promise<any>;
   deleteEnvironment: (id: string) => Promise<any>;
   saveVariableDefinition: (data: any) => Promise<any>;
   saveVariableValue: (data: any) => Promise<any>;
+  deleteVariable: (id: string) => Promise<any>;
   getVariables: (projectId: string, environmentId: string, masterKey: string) => Promise<any[]>;
 
   getDocuments: (projectId: string) => Promise<any[]>;

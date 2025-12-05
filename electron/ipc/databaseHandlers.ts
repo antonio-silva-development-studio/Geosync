@@ -69,6 +69,10 @@ export function registerDatabaseHandlers() {
     return await prisma.project.create({ data });
   });
 
+  ipcMain.handle('db:delete-project', async (_, id) => {
+    return await prisma.project.delete({ where: { id } });
+  });
+
   // Environment Handlers
   ipcMain.handle('db:get-environments', async (_, projectId) => {
     return await prisma.environment.findMany({ where: { projectId } });
@@ -102,6 +106,10 @@ export function registerDatabaseHandlers() {
       update: { description, defaultValue: encryptedDefaultValue, isSecret },
       create: { projectId, key, description, defaultValue: encryptedDefaultValue, isSecret },
     });
+  });
+
+  ipcMain.handle('db:delete-variable-definition', async (_, id) => {
+    return await prisma.variableDefinition.delete({ where: { id } });
   });
 
   ipcMain.handle('db:save-variable-value', async (_, { environmentId, definitionId, value, masterKey }) => {

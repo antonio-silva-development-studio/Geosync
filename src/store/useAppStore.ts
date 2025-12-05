@@ -14,6 +14,7 @@ interface AppState {
   variables: VariableDefinition[];
   documents: Document[];
   authMethod: 'password' | 'biometric' | null;
+  activeView: 'project' | 'settings';
 
   // Actions
   setAuthenticated: (key: string, method: 'password' | 'biometric', user?: { name: string; email: string }) => void;
@@ -32,6 +33,7 @@ interface AppState {
   addDocument: (doc: Partial<Document>) => Promise<void>;
   updateDocument: (id: string, updates: Partial<Document>) => Promise<void>;
   removeDocument: (id: string) => Promise<void>;
+  setActiveView: (view: 'project' | 'settings') => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -47,6 +49,7 @@ export const useAppStore = create<AppState>((set) => ({
   variables: [],
   documents: [],
   authMethod: null,
+  activeView: 'project',
 
   setAuthenticated: (key, method, user) => set({
     isAuthenticated: true,
@@ -62,16 +65,18 @@ export const useAppStore = create<AppState>((set) => ({
     userProfile: null,
     currentOrganization: null,
     currentProject: null,
-    currentEnvironment: null
+    currentEnvironment: null,
+    activeView: 'project'
   }),
   setOrganizations: (organizations) => set({ organizations }),
   setCurrentOrganization: (org) => set({ currentOrganization: org }),
   setProjects: (projects) => set({ projects }),
-  setCurrentProject: (project) => set({ currentProject: project }),
+  setCurrentProject: (project) => set({ currentProject: project, activeView: 'project' }),
   setEnvironments: (environments) => set({ environments }),
   setCurrentEnvironment: (env) => set({ currentEnvironment: env }),
   setVariables: (variables) => set({ variables }),
   setDocuments: (documents) => set({ documents }),
+  setActiveView: (view) => set({ activeView: view }),
 
   fetchProjects: async (organizationId: string) => {
     try {

@@ -5,9 +5,10 @@ import { ProjectView } from './ProjectView';
 import { ProjectList } from './ProjectList';
 import { OrganizationSwitcher } from './OrganizationSwitcher';
 import { UserMenu } from './UserMenu';
+import { SettingsView } from './SettingsView';
 
 export const Dashboard: React.FC = () => {
-  const { currentProject } = useAppStore();
+  const { currentProject, activeView } = useAppStore();
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -28,7 +29,9 @@ export const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        {currentProject ? (
+        {activeView === 'settings' ? (
+          <SettingsView />
+        ) : currentProject ? (
           <ProjectView />
         ) : (
           <div className="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">

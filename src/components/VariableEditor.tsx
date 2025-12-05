@@ -185,34 +185,94 @@ export const VariableEditor: React.FC = () => {
                         "font-mono text-sm",
                         variable.isOverridden ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
                       )}>
-                        {(!variable.isSecret || (authMethod === 'biometric' && !showSecrets[variable.id]) || showSecrets[variable.id])
+                        {showSecrets[variable.id]
                           ? (variable.value || <span className="italic opacity-50">No value</span>)
                           : '••••••••••••••••'}
                       </div>
 
-                      {variable.isSecret && (
-                        <div className="flex items-center gap-1">
-                          {variable.value && (
-                            <button
-                              onClick={() => handleCopy(variable.value!)}
-                              className="p-1 text-gray-400 hover:text-gray-600"
-                              title="Copy Value"
-                            >
-                              <Copy className="h-3 w-3" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleShowSecret(variable.id)}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                            title={showSecrets[variable.id] ? "Hide" : "Show"}
-                          >
-                            {(authMethod === 'biometric' || showSecrets[variable.id])
-                              ? <EyeOff className="h-3 w-3" />
-                              : <Lock className="h-3 w-3" />
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={async () => {
+                            // Copy logic with auth
+                            if (showSecrets[variable.id]) {
+                              handleCopy(variable.value || '');
+                              return;
                             }
-                          </button>
-                        </div>
-                      )}
+
+                            // Authenticate before copy
+                            let authenticated = false;
+                            const bioAvailable = await window.electronAPI.isBiometricAvailable();
+
+                            if (bioAvailable) {
+                              authenticated = await window.electronAPI.authenticateBiometric();
+                            }
+
+                            if (!authenticated) {
+                              // Fallback to password
+                              const password = prompt("Enter Master Password to copy:");
+                              if (password) {
+                                const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
+                                const hashArray = Array.from(new Uint8Array(hash));
+                                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                                const result = await window.electronAPI.verifyMasterPassword(hashHex);
+                                authenticated = result.valid;
+                              }
+                            }
+
+                            if (authenticated) {
+                              handleCopy(variable.value || '');
+                            } else {
+                              alert('Authentication failed');
+                            }
+                          }}
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          title="Copy Value"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            if (showSecrets[variable.id]) {
+                              toggleSecret(variable.id);
+                              return;
+                            }
+
+                            // Authenticate before reveal
+                            let authenticated = false;
+                            const bioAvailable = await window.electronAPI.isBiometricAvailable();
+
+                            if (bioAvailable) {
+                              authenticated = await window.electronAPI.authenticateBiometric();
+                            }
+
+                            if (!authenticated) {
+                              // Fallback to password
+                              const password = prompt("Enter Master Password to view:");
+                              if (password) {
+                                const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
+                                const hashArray = Array.from(new Uint8Array(hash));
+                                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                                const result = await window.electronAPI.verifyMasterPassword(hashHex);
+                                authenticated = result.valid;
+                              }
+                            }
+
+                            if (authenticated) {
+                              toggleSecret(variable.id);
+                            } else {
+                              alert('Authentication failed');
+                            }
+                          }}
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          title={showSecrets[variable.id] ? "Hide" : "Show"}
+                        >
+                          {showSecrets[variable.id]
+                            ? <EyeOff className="h-3 w-3" />
+                            : <Lock className="h-3 w-3" />
+                          }
+                        </button>
+                      </div>
 
                       {variable.isOverridden && (
                         <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-400/30">
@@ -245,9 +305,18 @@ export const VariableEditor: React.FC = () => {
                             Edit
                           </button>
                           <button
-                            onClick={() => {
-                              // TODO: Implement delete functionality
-                              alert('Delete functionality coming soon');
+                            onClick={async () => {
+                              if (!confirm('Are you sure you want to delete this variable?')) return;
+
+                              try {
+                                await window.electronAPI.deleteVariable(variable.id);
+                                // Refresh variables
+                                const vars = await window.electronAPI.getVariables(currentProject!.id, currentEnvironment!.id, masterKey!);
+                                setVariables(vars);
+                              } catch (error) {
+                                console.error('Failed to delete variable', error);
+                                alert('Failed to delete variable');
+                              }
                               setOpenActionId(null);
                             }}
                             className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"

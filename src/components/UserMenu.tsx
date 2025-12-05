@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { LogOut, Settings, ChevronUp } from 'lucide-react';
-import { SettingsModal } from './SettingsModal';
 
 export const UserMenu: React.FC = () => {
-  const { userProfile, logout } = useAppStore();
+  const { userProfile, logout, setActiveView } = useAppStore();
   const [isOpen, setIsOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <>
@@ -39,7 +37,7 @@ export const UserMenu: React.FC = () => {
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    setIsSettingsOpen(true);
+                    setActiveView('settings');
                   }}
                   className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                 >
@@ -59,8 +57,6 @@ export const UserMenu: React.FC = () => {
           </>
         )}
       </div>
-
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </>
   );
 };

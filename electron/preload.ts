@@ -13,12 +13,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   getProjects: (organizationId: string) => ipcRenderer.invoke('db:get-projects', organizationId),
   createProject: (data: any) => ipcRenderer.invoke('db:create-project', data),
+  deleteProject: (id: string) => ipcRenderer.invoke('db:delete-project', id),
   getEnvironments: (projectId: string) => ipcRenderer.invoke('db:get-environments', projectId),
   createEnvironment: (data: any) => ipcRenderer.invoke('db:create-environment', data),
   updateEnvironment: (id: string, data: any) => ipcRenderer.invoke('db:update-environment', { id, data }),
   deleteEnvironment: (id: string) => ipcRenderer.invoke('db:delete-environment', id),
   saveVariableDefinition: (data: any) => ipcRenderer.invoke('db:save-variable-definition', data),
   saveVariableValue: (data: any) => ipcRenderer.invoke('db:save-variable-value', data),
+  deleteVariable: (id: string) => ipcRenderer.invoke('db:delete-variable-definition', id),
   getVariables: (projectId: string, environmentId: string, masterKey: string) => ipcRenderer.invoke('db:get-variables', { projectId, environmentId, masterKey }),
 
   // Documents

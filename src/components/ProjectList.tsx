@@ -21,12 +21,18 @@ export const ProjectList: React.FC = () => {
   const handleDeleteProject = async (projectId: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return;
 
-    // Mock delete for now
-    const updatedProjects = projects.filter(p => p.id !== projectId);
-    setProjects(updatedProjects);
+    try {
+      await window.electronAPI.deleteProject(projectId);
 
-    if (currentProject?.id === projectId) {
-      setCurrentProject(null);
+      const updatedProjects = projects.filter(p => p.id !== projectId);
+      setProjects(updatedProjects);
+
+      if (currentProject?.id === projectId) {
+        setCurrentProject(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete project', error);
+      alert('Failed to delete project');
     }
   };
 
