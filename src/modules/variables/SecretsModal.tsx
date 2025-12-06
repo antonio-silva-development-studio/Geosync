@@ -1,6 +1,8 @@
 import { AlertCircle, Eye, EyeOff, Plus, Trash2, Upload, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { Input } from '../../shared/ui/Input';
+import { Select } from '../../shared/ui/Select';
 import type { Environment } from '../../types';
 
 interface SecretsModalProps {
@@ -172,24 +174,16 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
           <form id="secrets-form" onSubmit={handleSubmit} className="space-y-6">
             {/* Environment Selector */}
             <div className="space-y-2">
-              <label
-                htmlFor="env-selector"
-                className="text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Environment
-              </label>
-              <select
+              <Select
+                label="Environment"
                 id="env-selector"
                 value={selectedEnvId}
                 onChange={(e) => setSelectedEnvId(e.target.value)}
-                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              >
-                {environments.map((env) => (
-                  <option key={env.id} value={env.id}>
-                    {env.name}
-                  </option>
-                ))}
-              </select>
+                options={environments.map((env) => ({
+                  value: env.id,
+                  label: env.name,
+                }))}
+              />
             </div>
 
             {/* Variables List */}
@@ -201,41 +195,33 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
                 >
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">
-                        Key
-                        <input
-                          type="text"
-                          placeholder="KEY"
-                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-mono placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                          value={row.key}
-                          onChange={(e) => updateRow(row.id, 'key', e.target.value)}
-                          onPaste={(e) => handlePaste(e, row.id)}
-                        />
-                      </label>
+                      <Input
+                        label="Key"
+                        placeholder="KEY"
+                        value={row.key}
+                        onChange={(e) => updateRow(row.id, 'key', e.target.value)}
+                        onPaste={(e) => handlePaste(e, row.id)}
+                        className="font-mono"
+                      />
                     </div>
 
                     <div className="space-y-1">
-                      <label
-                        htmlFor={`value-${row.id}`}
-                        className="text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                      >
-                        Value
-                      </label>
                       <div className="relative">
-                        <input
+                        <Input
+                          label="Value"
                           id={`value-${row.id}`}
                           type={showValues[row.id] ? 'text' : 'password'}
                           placeholder="Value"
-                          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-sm font-mono placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                           value={row.value}
                           onChange={(e) => updateRow(row.id, 'value', e.target.value)}
+                          className="font-mono pr-10"
                         />
                         <button
                           type="button"
                           onClick={() =>
                             setShowValues((prev) => ({ ...prev, [row.id]: !prev[row.id] }))
                           }
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="absolute right-2 top-[34px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                           {showValues[row.id] ? (
                             <EyeOff className="h-4 w-4" />

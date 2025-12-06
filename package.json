@@ -36,8 +36,12 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/swagger-ui-react": "^5.18.0",
     "electron-store": "^11.0.2",
-    "keytar": "^7.9.0"
+    "js-yaml": "^4.1.1",
+    "keytar": "^7.9.0",
+    "swagger-ui-react": "^5.30.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

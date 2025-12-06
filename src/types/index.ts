@@ -6,6 +6,15 @@ export interface Organization {
   updatedAt: string;
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
+  isEnabled: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Project {
   id: string;
   organizationId?: string;
@@ -13,6 +22,7 @@ export interface Project {
   description: string | null;
   createdAt: string;
   updatedAt: string;
+  tags?: Tag[];
 }
 
 export interface Environment {
@@ -53,4 +63,12 @@ export interface Document {
   content: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AccessToken {
+  id: string;
+  name: string;
+  lastUsedAt: string | null;
+  createdAt: string;
+  expiresAt: string | null;
 }

@@ -2,6 +2,7 @@ import { Building2, Check, ChevronDown, Plus } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
 import type { Organization } from '../../types';
 
@@ -111,10 +112,10 @@ export const OrganizationSwitcher: React.FC = () => {
 
               {isCreating ? (
                 <form onSubmit={handleCreateOrganization} className="px-2 py-1">
-                  <input
+                  <Input
                     type="text"
                     placeholder="Organization Name"
-                    className="w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                    className="w-full"
                     value={newOrgName}
                     onChange={(e) => setNewOrgName(e.target.value)}
                     onKeyDown={(e) => {
@@ -127,6 +128,7 @@ export const OrganizationSwitcher: React.FC = () => {
                         setNewOrgName('');
                       }
                     }}
+                    autoFocus
                   />
                   <div className="mt-2 flex justify-end gap-2">
                     <button

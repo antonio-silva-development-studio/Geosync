@@ -4,6 +4,7 @@ import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { ContextMenu } from '../../shared/ui/ContextMenu';
+import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
 import { useAuthStore } from '../auth/store';
 import { useProjectsStore } from '../projects/store';
@@ -148,9 +149,9 @@ export const EnvironmentView: React.FC = () => {
               ]}
             >
               {editingEnvId === env.id ? (
-                <input
+                <Input
                   type="text"
-                  className="w-24 rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-32"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   onBlur={() => handleRenameEnv(env.id, editName)}
@@ -158,6 +159,7 @@ export const EnvironmentView: React.FC = () => {
                     if (e.key === 'Enter') handleRenameEnv(env.id, editName);
                     if (e.key === 'Escape') setEditingEnvId(null);
                   }}
+                  autoFocus
                 />
               ) : (
                 <button
@@ -182,13 +184,14 @@ export const EnvironmentView: React.FC = () => {
 
           {isCreatingEnv ? (
             <form onSubmit={handleCreateEnv} className="flex items-center gap-2">
-              <input
+              <Input
                 type="text"
-                className="w-32 rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-32"
                 placeholder="Env Name"
                 value={newEnvName}
                 onChange={(e) => setNewEnvName(e.target.value)}
                 onBlur={() => !newEnvName && setIsCreatingEnv(false)}
+                autoFocus
               />
             </form>
           ) : (

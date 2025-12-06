@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { FileText, Plus, Save, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { Input } from '../../shared/ui/Input';
 import { MarkdownEditor } from '../../shared/ui/MarkdownEditor';
 import { useAppStore } from '../../store/useAppStore';
 import type { Document } from '../../types';
@@ -25,14 +26,13 @@ const DocumentEditor = ({ doc }: { doc: Document }) => {
   return (
     <>
       <div className="flex items-center justify-between border-b px-6 py-4 dark:border-gray-700">
-        <input
-          type="text"
+        <Input
           value={editTitle}
           onChange={(e) => {
             setEditTitle(e.target.value);
             setIsDirty(true);
           }}
-          className="bg-transparent text-xl font-bold text-gray-900 focus:outline-none dark:text-white"
+          className="flex-1 max-w-md"
           placeholder="Document Title"
         />
         <button

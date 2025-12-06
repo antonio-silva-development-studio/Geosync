@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { Plus } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
 import { useAuthStore } from '../auth/store';
 import { useProjectsStore } from '../projects/store';
@@ -96,11 +97,11 @@ export const EnvironmentManager: React.FC = () => {
 
           {isCreatingEnv ? (
             <form onSubmit={handleCreateEnv} className="flex items-center gap-2">
-              <input
+              <Input
                 // biome-ignore lint/a11y/noAutofocus: UX requirement
                 autoFocus
                 type="text"
-                className="w-32 rounded border px-2 py-1 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-32"
                 placeholder="Env Name"
                 value={newEnvName}
                 onChange={(e) => setNewEnvName(e.target.value)}

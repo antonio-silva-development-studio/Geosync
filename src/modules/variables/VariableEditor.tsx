@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
 import { useAuthStore } from '../auth/store';
 import { useProjectsStore } from '../projects/store';
@@ -224,15 +225,15 @@ export const VariableEditor: React.FC = () => {
                   <td className="px-6 py-4">
                     {editingId === variable.id ? (
                       <div className="flex items-center rounded-md border border-gray-300 shadow-sm focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 dark:border-gray-600 dark:bg-gray-700">
-                        <input
-                          type="text"
-                          className="block w-full border-0 bg-transparent p-2 text-sm focus:ring-0 dark:text-white"
+                        <Input
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleSaveValue(variable.id);
                             if (e.key === 'Escape') setEditingId(null);
                           }}
+                          className="w-full"
+                          autoFocus
                         />
                         <button
                           type="button"

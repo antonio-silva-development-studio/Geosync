@@ -31,7 +31,7 @@ export const Input: React.FC<InputProps> = ({
         id={inputId}
         className={clsx(
           'block w-full rounded-md border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6',
-          'dark:bg-gray-800 dark:text-white dark:ring-0 dark:focus:ring-2 dark:focus:ring-blue-500',
+          'dark:bg-gray-950 dark:text-white dark:ring-1 dark:ring-gray-700 dark:focus:ring-2 dark:focus:ring-blue-500',
           error && 'ring-red-300 focus:ring-red-500 dark:ring-red-900/50',
         )}
         {...props}

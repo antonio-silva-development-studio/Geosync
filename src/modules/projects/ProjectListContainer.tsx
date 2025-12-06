@@ -6,7 +6,7 @@ import { ProjectListView } from './components/ProjectListView';
 import { useProjectsStore } from './store';
 
 export const ProjectListContainer: React.FC = () => {
-  const { currentOrganization } = useAppStore();
+  const { currentOrganization, tags, fetchTags } = useAppStore();
   const { projects, currentProject, setProjects, setCurrentProject, addProject, deleteProject } =
     useProjectsStore();
 
@@ -23,15 +23,20 @@ export const ProjectListContainer: React.FC = () => {
       }
     };
     loadProjects();
-  }, [currentOrganization, setProjects]);
+    loadProjects();
+    fetchTags();
+  }, [currentOrganization, setProjects, fetchTags]);
 
-  const handleCreateProject = async (name: string) => {
+  const handleCreateProject = async (name: string, selectedTags: string[]) => {
     if (!currentOrganization) return;
     try {
       const newProject = await window.electronAPI.createProject({
         name,
         description: '',
         organizationId: currentOrganization.id,
+        tags: {
+          connect: selectedTags.map((id) => ({ id })),
+        },
       });
       addProject(newProject);
       setCurrentProject(newProject);
@@ -63,6 +68,8 @@ export const ProjectListContainer: React.FC = () => {
       onSelectProject={setCurrentProject}
       onDeleteProject={handleDeleteProject}
       onCreateProject={handleCreateProject}
+      tags={tags}
+      hasOrganization={!!currentOrganization}
     />
   );
 };

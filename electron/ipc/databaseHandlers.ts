@@ -1,9 +1,12 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { PrismaClient as PrismaClientType } from '@prisma/client';
 import { app, dialog, ipcMain } from 'electron';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const { PrismaClient } = require('@prisma/client') as { PrismaClient: typeof PrismaClientType };
 
@@ -11,22 +14,20 @@ import { EncryptionService } from '../services/EncryptionService';
 
 const dbPath = path.join(app.getPath('userData'), 'geosync.db');
 
-// Initialize DB if it doesn't exist
 function getSkeletonPath() {
   return app.isPackaged
     ? path.join(process.resourcesPath, 'skeleton.db')
-    : path.join(__dirname, '../../prisma/skeleton.db'); // Adjust for dev structure
+    : path.join(__dirname, '../prisma/skeleton.db'); // Adjust for dev structure
 }
 
 if (!fs.existsSync(dbPath)) {
   const skeletonPath = getSkeletonPath();
+
   if (fs.existsSync(skeletonPath)) {
     try {
       fs.copyFileSync(skeletonPath, dbPath);
-      console.log('Initialized database from skeleton');
     } catch (e) {
       console.error('Failed to copy skeleton database', e);
-      dialog.showErrorBox('Initialization Error', 'Failed to initialize database.');
     }
   } else {
     console.warn('Skeleton database not found at', skeletonPath);
@@ -143,15 +144,93 @@ export function registerDatabaseHandlers() {
   // Project Handlers
   ipcMain.handle('db:get-projects', async (_, organizationId) => {
     if (!organizationId) return [];
-    return await prisma.project.findMany({ where: { organizationId } });
+    try {
+      return await prisma.project.findMany({
+        where: { organizationId },
+        include: { tags: true },
+      });
+    } catch (error) {
+      console.error('Failed to get projects:', error);
+      dialog.showErrorBox('Failed to load projects', String(error));
+      throw error;
+    }
   });
 
   ipcMain.handle('db:create-project', async (_, data) => {
     return await prisma.project.create({ data });
   });
 
+  ipcMain.handle('db:update-project', async (_, { id, data }) => {
+    return await prisma.project.update({
+      where: { id },
+      data,
+      include: { tags: true },
+    });
+  });
+
   ipcMain.handle('db:delete-project', async (_, id) => {
     return await prisma.project.delete({ where: { id } });
+  });
+
+  // Tag Handlers
+  ipcMain.handle('db:get-tags', async () => {
+    return await prisma.tag.findMany();
+  });
+
+  ipcMain.handle('db:create-tag', async (_, data) => {
+    return await prisma.tag.create({ data });
+  });
+
+  ipcMain.handle('db:update-tag', async (_, { id, data }) => {
+    return await prisma.tag.update({
+      where: { id },
+      data,
+    });
+  });
+
+  ipcMain.handle('db:delete-tag', async (_, id) => {
+    return await prisma.tag.delete({ where: { id } });
+  });
+
+  ipcMain.handle('db:create-access-token', async (_, { name, expiresInDays }) => {
+    const token = `gs_${crypto.randomBytes(32).toString('hex')}`;
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    let expiresAt = null;
+    if (expiresInDays) {
+      expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + expiresInDays);
+    }
+
+    // @ts-expect-error - Prisma client types might be stale in IDE
+    const accessToken = await prisma.accessToken.create({
+      data: {
+        name,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    return { ...accessToken, token }; // Return the plain token ONLY once
+  });
+
+  ipcMain.handle('db:get-access-tokens', async () => {
+    // @ts-expect-error - Prisma client types might be stale in IDE
+    return await prisma.accessToken.findMany({
+      select: {
+        id: true,
+        name: true,
+        lastUsedAt: true,
+        createdAt: true,
+        expiresAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  });
+
+  ipcMain.handle('db:delete-access-token', async (_, id) => {
+    // @ts-expect-error - Prisma client types might be stale in IDE
+    return await prisma.accessToken.delete({ where: { id } });
   });
 
   // Environment Handlers
@@ -180,7 +259,7 @@ export function registerDatabaseHandlers() {
     async (_, { projectId, key, description, defaultValue, isSecret, masterKey }) => {
       let encryptedDefaultValue = null;
       if (defaultValue) {
-        const keyBuffer = Buffer.from(masterKey, 'hex'); // Assuming masterKey is passed as hex string
+        const keyBuffer = Buffer.from(masterKey, 'hex');
         encryptedDefaultValue = EncryptionService.encrypt(defaultValue, keyBuffer);
       }
 
@@ -265,5 +344,18 @@ export function registerDatabaseHandlers() {
 
   ipcMain.handle('db:delete-document', async (_, id) => {
     return await prisma.document.delete({ where: { id } });
+  });
+
+  // Collection Handlers
+  ipcMain.handle('db:get-collections', async (_, projectId) => {
+    return await prisma.apiCollection.findMany({ where: { projectId } });
+  });
+
+  ipcMain.handle('db:create-collection', async (_, data) => {
+    return await prisma.apiCollection.create({ data });
+  });
+
+  ipcMain.handle('db:delete-collection', async (_, id) => {
+    return await prisma.apiCollection.delete({ where: { id } });
   });
 }
