@@ -7,7 +7,7 @@ import { useProjectsStore } from './store';
 
 export const ProjectListContainer: React.FC = () => {
   const { currentOrganization, tags, fetchTags } = useAppStore();
-  const { projects, currentProject, setProjects, setCurrentProject, addProject, deleteProject } =
+  const { projects, currentProject, setProjects, setCurrentProject, addProject, deleteProject, updateProject } =
     useProjectsStore();
 
   useEffect(() => {
@@ -15,14 +15,16 @@ export const ProjectListContainer: React.FC = () => {
       if (currentOrganization) {
         try {
           const fetchedProjects = await window.electronAPI.getProjects(currentOrganization.id);
-          setProjects(fetchedProjects);
+          setProjects(Array.isArray(fetchedProjects) ? fetchedProjects : []);
         } catch (error) {
           console.error('Failed to fetch projects', error);
           toast.error('Failed to load projects');
+          setProjects([]);
         }
+      } else {
+        setProjects([]);
       }
     };
-    loadProjects();
     loadProjects();
     fetchTags();
   }, [currentOrganization, setProjects, fetchTags]);
@@ -61,6 +63,23 @@ export const ProjectListContainer: React.FC = () => {
     }
   };
 
+  const handleUpdateProjectTags = async (projectId: string, tagIds: string[]) => {
+    try {
+      const updatedProject = await window.electronAPI.updateProject(projectId, {
+        tags: {
+          set: tagIds.map((id) => ({ id })),
+        },
+      });
+      // Update project in store
+      updateProject(updatedProject);
+      toast.success('Tags updated successfully');
+    } catch (error) {
+      console.error('Failed to update project tags', error);
+      toast.error('Failed to update tags');
+      throw error;
+    }
+  };
+
   return (
     <ProjectListView
       projects={projects}
@@ -68,6 +87,7 @@ export const ProjectListContainer: React.FC = () => {
       onSelectProject={setCurrentProject}
       onDeleteProject={handleDeleteProject}
       onCreateProject={handleCreateProject}
+      onUpdateProjectTags={handleUpdateProjectTags}
       tags={tags}
       hasOrganization={!!currentOrganization}
     />

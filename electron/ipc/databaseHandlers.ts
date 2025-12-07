@@ -132,9 +132,86 @@ export function registerDatabaseHandlers() {
     return true;
   });
 
+  // Workspace Handlers
+  ipcMain.handle('db:get-workspaces', async () => {
+    try {
+      // @ts-expect-error - Prisma client types might be stale in IDE
+      const workspaces = await prisma.workspace.findMany({
+        orderBy: { createdAt: 'asc' },
+      });
+      return Array.isArray(workspaces) ? workspaces : [];
+    } catch (error: unknown) {
+      // Check if it's a Prisma error about missing table
+      if (error && typeof error === 'object' && 'code' in error) {
+        // P2021 = Table does not exist
+        if (error.code === 'P2021') {
+          console.warn('Workspace table does not exist. Migration may be needed.');
+          return [];
+        }
+      }
+      const msg = String(error);
+      if (msg.includes('no such table') || msg.includes('does not exist')) {
+        console.warn('Workspace table does not exist. Migration may be needed.');
+        return [];
+      }
+      console.error('Failed to get workspaces:', error);
+      return [];
+    }
+  });
+
+  ipcMain.handle('db:create-workspace', async (_, data) => {
+    try {
+      // Check if a workspace with the same name already exists
+      // @ts-expect-error - Prisma client types might be stale in IDE
+      const existing = await prisma.workspace.findFirst({
+        where: { name: data.name },
+      });
+      if (existing) {
+        // Return existing workspace instead of creating duplicate
+        return existing;
+      }
+      // @ts-expect-error - Prisma client types might be stale in IDE
+      return await prisma.workspace.create({ data });
+    } catch (error: unknown) {
+      // Check if it's a Prisma error about missing table
+      if (error && typeof error === 'object' && 'code' in error) {
+        // P2021 = Table does not exist
+        if (error.code === 'P2021') {
+          console.warn('Workspace table does not exist. Migration needed.');
+          throw new Error('Workspace feature requires database migration. Please run: npx prisma migrate deploy');
+        }
+      }
+      throw error;
+    }
+  });
+
+  ipcMain.handle('db:set-active-workspace', async (_, id) => {
+    try {
+      // @ts-expect-error - Prisma client types might be stale in IDE
+      // Set all workspaces to inactive, then set the selected one to active
+      await prisma.workspace.updateMany({
+        data: { isActive: false },
+      });
+      // @ts-expect-error - Prisma client types might be stale in IDE
+      return await prisma.workspace.update({
+        where: { id },
+        data: { isActive: true },
+      });
+    } catch (error: unknown) {
+      console.error('Failed to set active workspace:', error);
+      throw error;
+    }
+  });
+
   // Organization Handlers
   ipcMain.handle('db:get-organizations', async () => {
-    return await prisma.organization.findMany();
+    try {
+      const orgs = await prisma.organization.findMany();
+      return Array.isArray(orgs) ? orgs : [];
+    } catch (error) {
+      console.error('Failed to get organizations:', error);
+      return [];
+    }
   });
 
   ipcMain.handle('db:create-organization', async (_, data) => {
@@ -157,6 +234,10 @@ export function registerDatabaseHandlers() {
   });
 
   ipcMain.handle('db:create-project', async (_, data) => {
+    // Organization is required to create a project
+    if (!data.organizationId) {
+      throw new Error('Organization is required to create a project');
+    }
     return await prisma.project.create({ data });
   });
 

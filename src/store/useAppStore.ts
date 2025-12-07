@@ -47,7 +47,7 @@ export const useAppStore = create<AppState>((set) => ({
   activeView: 'project',
   theme: 'system',
 
-  setOrganizations: (organizations) => set({ organizations }),
+  setOrganizations: (organizations) => set({ organizations: Array.isArray(organizations) ? organizations : [] }),
   setCurrentOrganization: (org) => set({ currentOrganization: org }),
   setEnvironments: (environments) => set({ environments }),
   setCurrentEnvironment: (env) => set({ currentEnvironment: env }),

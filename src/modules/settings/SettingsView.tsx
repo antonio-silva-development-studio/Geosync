@@ -32,7 +32,7 @@ export const SettingsView: React.FC = () => {
         return (
           <PlaceholderView
             title="Workspaces"
-            description="Manage your work profiles to separate contexts like 'Personal', 'Agency X', or 'Freelance'."
+            description="Use Tags on projects to organize your work contexts. Right-click on any project to manage its tags."
             icon={Briefcase}
           />
         );

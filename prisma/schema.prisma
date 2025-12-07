@@ -18,7 +18,7 @@ model Organization {
 
 model Project {
   id                  String               @id @default(uuid())
-  organizationId      String?
+  organizationId      String
   name                String
   description         String?
   createdAt           DateTime             @default(now())
@@ -26,7 +26,7 @@ model Project {
   apiCollections      ApiCollection[]
   documents           Document[]
   environments        Environment[]
-  organization        Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   variableDefinitions VariableDefinition[]
   tags                Tag[]                @relation("ProjectToTag")
 }

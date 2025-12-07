@@ -15,12 +15,17 @@ export const OrganizationSwitcher: React.FC = () => {
 
   useEffect(() => {
     const loadOrganizations = async () => {
-      const orgs = await window.electronAPI.getOrganizations();
-      setOrganizations(orgs);
+      try {
+        const orgs = await window.electronAPI.getOrganizations();
+        setOrganizations(orgs || []);
 
-      // Select first org if none selected and orgs exist
-      if (!currentOrganization && orgs.length > 0) {
-        setCurrentOrganization(orgs[0]);
+        // Select first org if none selected and orgs exist
+        if (!currentOrganization && orgs && orgs.length > 0) {
+          setCurrentOrganization(orgs[0]);
+        }
+      } catch (error) {
+        console.error('Failed to load organizations:', error);
+        setOrganizations([]);
       }
     };
     loadOrganizations();
@@ -37,7 +42,7 @@ export const OrganizationSwitcher: React.FC = () => {
         slug,
       });
 
-      const updatedOrgs = [...organizations, newOrg];
+      const updatedOrgs = [...(organizations || []), newOrg];
       setOrganizations(updatedOrgs);
       setCurrentOrganization(newOrg);
       setNewOrgName('');
@@ -88,7 +93,7 @@ export const OrganizationSwitcher: React.FC = () => {
             <div className="p-2">
               <div className="mb-2 px-2 text-xs font-semibold text-gray-500">Organizations</div>
               <div className="space-y-1">
-                {organizations.map((org) => (
+                {(organizations || []).map((org) => (
                   <button
                     type="button"
                     key={org.id}

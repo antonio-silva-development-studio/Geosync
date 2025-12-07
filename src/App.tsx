@@ -1,5 +1,6 @@
 import React from 'react';
 import { Toaster } from 'sonner';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { LoginContainer } from './modules/auth/LoginContainer';
 import { useAuthStore } from './modules/auth/store';
 import { Dashboard } from './modules/layout/Dashboard';
@@ -25,14 +26,18 @@ function App() {
   }, [theme]);
 
   if (!isAuthenticated) {
-    return <LoginContainer />;
+    return (
+      <ErrorBoundary>
+        <LoginContainer />
+      </ErrorBoundary>
+    );
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <Toaster position="top-right" richColors />
       <Dashboard />
-    </>
+    </ErrorBoundary>
   );
 }
 

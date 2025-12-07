@@ -10,6 +10,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   changeMasterPassword: (oldHash: string, newHash: string) =>
     ipcRenderer.invoke('db:change-master-password', { oldHash, newHash }),
 
+  // Workspaces
+  getWorkspaces: () => ipcRenderer.invoke('db:get-workspaces'),
+  // biome-ignore lint/suspicious/noExplicitAny: generic data object
+  createWorkspace: (data: any) => ipcRenderer.invoke('db:create-workspace', data),
+  setActiveWorkspace: (id: string) => ipcRenderer.invoke('db:set-active-workspace', id),
+
   getOrganizations: () => ipcRenderer.invoke('db:get-organizations'),
   // biome-ignore lint/suspicious/noExplicitAny: generic data object
   createOrganization: (data: any) => ipcRenderer.invoke('db:create-organization', data),

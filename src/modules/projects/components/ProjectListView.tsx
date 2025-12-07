@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { Folder, FolderOpen, Plus, Trash2 } from 'lucide-react';
+import { Folder, FolderOpen, Plus, Tag as TagIcon, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { ContextMenu } from '../../../shared/ui/ContextMenu';
@@ -12,6 +12,7 @@ interface ProjectListViewProps {
   onSelectProject: (project: Project) => void;
   onDeleteProject: (projectId: string) => void;
   onCreateProject: (name: string, tags: string[]) => Promise<void>;
+  onUpdateProjectTags: (projectId: string, tagIds: string[]) => Promise<void>;
   tags: Tag[];
   hasOrganization: boolean;
 }
@@ -22,6 +23,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
   onSelectProject,
   onDeleteProject,
   onCreateProject,
+  onUpdateProjectTags,
   tags,
   hasOrganization,
 }) => {
@@ -29,6 +31,8 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
   const [newProjectName, setNewProjectName] = useState('');
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [filterTagId, setFilterTagId] = useState<string | null>(null);
+  const [editingTagsProjectId, setEditingTagsProjectId] = useState<string | null>(null);
+  const [editingTagIds, setEditingTagIds] = useState<string[]>([]);
 
   const filteredProjects = filterTagId
     ? projects.filter((p) => p.tags?.some((t) => t.id === filterTagId))
@@ -110,7 +114,13 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
         </button>
       </div>
 
-      {isCreating && (
+      {isCreating && !hasOrganization && (
+        <div className="mb-2 rounded-md border border-yellow-200 bg-yellow-50 p-2 text-xs text-yellow-800 dark:border-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+          Please select or create an organization first before creating a project.
+        </div>
+      )}
+
+      {isCreating && hasOrganization && (
         <div className="mb-2">
           <Input
             type="text"
@@ -168,6 +178,14 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
             key={project.id}
             items={[
               {
+                label: 'Manage Tags',
+                icon: <TagIcon className="h-4 w-4" />,
+                onClick: () => {
+                  setEditingTagsProjectId(project.id);
+                  setEditingTagIds(project.tags?.map((t) => t.id) || []);
+                },
+              },
+              {
                 label: 'Delete',
                 icon: <Trash2 className="h-4 w-4" />,
                 danger: true,
@@ -207,6 +225,86 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
           </ContextMenu>
         ))}
       </div>
+
+      {/* Tags Management Modal */}
+      {editingTagsProjectId && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/50"
+            onClick={() => {
+              setEditingTagsProjectId(null);
+              setEditingTagIds([]);
+            }}
+          />
+          <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+              Manage Tags
+            </h3>
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+              Select tags to assign to this project. Use tags as context of work (e.g., "Agência X", "Pessoal", "Freelance").
+            </p>
+            <div className="mb-4 max-h-64 space-y-2 overflow-y-auto">
+              {tags.length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No tags available. Create tags in Settings first.
+                </p>
+              ) : (
+                tags.map((tag) => (
+                  <label
+                    key={tag.id}
+                    className="flex cursor-pointer items-center gap-3 rounded-md border border-gray-200 p-2 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700/50"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={editingTagIds.includes(tag.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setEditingTagIds([...editingTagIds, tag.id]);
+                        } else {
+                          setEditingTagIds(editingTagIds.filter((id) => id !== tag.id));
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: tag.color }}
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{tag.name}</span>
+                  </label>
+                ))
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingTagsProjectId(null);
+                  setEditingTagIds([]);
+                }}
+                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await onUpdateProjectTags(editingTagsProjectId, editingTagIds);
+                    setEditingTagsProjectId(null);
+                    setEditingTagIds([]);
+                  } catch {
+                    // Error handling is done in container
+                  }
+                }}
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

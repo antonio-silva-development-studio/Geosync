@@ -10,6 +10,13 @@ export interface IElectronAPI {
   updateSystemProfile: (data: { name?: string; email?: string }) => Promise<any>;
   changeMasterPassword: (oldHash: string, newHash: string) => Promise<boolean>;
 
+  // Workspaces
+  // biome-ignore lint/suspicious/noExplicitAny: legacy type
+  getWorkspaces: () => Promise<any[]>;
+  // biome-ignore lint/suspicious/noExplicitAny: legacy type
+  createWorkspace: (data: any) => Promise<any>;
+  setActiveWorkspace: (id: string) => Promise<any>;
+
   // biome-ignore lint/suspicious/noExplicitAny: legacy type
   getOrganizations: () => Promise<any[]>;
   // biome-ignore lint/suspicious/noExplicitAny: legacy type
