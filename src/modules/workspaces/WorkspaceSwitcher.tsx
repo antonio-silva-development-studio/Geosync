@@ -1,6 +1,6 @@
 import { Briefcase, Plus } from 'lucide-react';
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Input } from '../../shared/ui/Input';
 import { Select } from '../../shared/ui/Select';
@@ -33,7 +33,7 @@ export const WorkspaceSwitcher: React.FC = () => {
     }
   };
 
-  const loadWorkspaces = useCallback(async () => {
+  const loadWorkspaces = async () => {
     try {
       const data = await window.electronAPI.getWorkspaces();
       // Double check - ensure it's always an array
@@ -91,11 +91,12 @@ export const WorkspaceSwitcher: React.FC = () => {
       setWorkspaces([]);
       setActiveWorkspace(null);
     }
-  }, []);
+  };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadWorkspaces is not memoized to avoid React Compiler errors
   useEffect(() => {
     loadWorkspaces().finally(() => setIsLoading(false));
-  }, [loadWorkspaces]);
+  }, []);
 
   const handleCreateWorkspace = async () => {
     if (!newWorkspaceName.trim()) return;

@@ -13,7 +13,6 @@ const { PrismaClient } = require('@prisma/client') as { PrismaClient: typeof Pri
 import { EncryptionService } from '../services/EncryptionService';
 
 const dbPath = path.join(app.getPath('userData'), 'geosync.db');
-console.log('Database path:', dbPath);
 
 function getSkeletonPath() {
   return app.isPackaged
@@ -74,13 +73,10 @@ const prisma: PrismaClientType = new PrismaClient({
 export function registerDatabaseHandlers() {
   // System/Auth Handlers
   ipcMain.handle('db:is-configured', async () => {
-    console.log('Handling db:is-configured');
     try {
       const config = await prisma.system.findUnique({ where: { id: 'config' } });
-      console.log('Config found:', !!config);
       return !!config;
     } catch (error) {
-      console.error('Error in db:is-configured:', error);
       dialog.showErrorBox(
         'Database Error',
         `Failed to check configuration: ${error instanceof Error ? error.message : String(error)}`,
