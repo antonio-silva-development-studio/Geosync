@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Button } from './Button';
 
 interface ContextMenuItem {
   label: string;
@@ -77,15 +78,15 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ children, items, class
             style={{ top: position.y, left: position.x }}
           >
             {items.map((item) => (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 key={item.label}
                 onClick={(e) => {
                   e.stopPropagation();
                   item.onClick();
                   setVisible(false);
                 }}
-                className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-left ${
+                className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-left justify-start font-normal ${
                   item.danger
                     ? 'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20'
                     : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700'
@@ -93,7 +94,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ children, items, class
               >
                 {item.icon && <span className="h-4 w-4">{item.icon}</span>}
                 {item.label}
-              </button>
+              </Button>
             ))}
           </div>,
           document.body,

@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { ChevronDown, ChevronRight, Code, FileText, Folder, Globe } from 'lucide-react';
 import type React from 'react';
 import { useMemo, useState } from 'react';
+import { Button } from '../../../../shared/ui/Button';
 import { type CollectionItem, parseCollection } from './parsers';
 
 interface CollectionViewerProps {
@@ -90,11 +91,11 @@ const TreeItem: React.FC<TreeItemProps> = ({ item, onSelect, selectedId, level =
 
   return (
     <div>
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         onClick={handleClick}
         className={clsx(
-          'flex w-full items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors text-left',
+          'flex w-full items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm transition-colors text-left justify-start h-auto font-normal',
           isSelected
             ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
             : 'hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300',
@@ -121,7 +122,7 @@ const TreeItem: React.FC<TreeItemProps> = ({ item, onSelect, selectedId, level =
         )}
 
         <span className="truncate">{item.name}</span>
-      </button>
+      </Button>
 
       {isGroup && isOpen && item.children && (
         <div>

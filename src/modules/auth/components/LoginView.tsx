@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Fingerprint } from 'lucide-react';
 import type React from 'react';
 import { useForm } from 'react-hook-form';
+import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/Input';
 import {
   type LoginFormData,
@@ -83,25 +84,26 @@ export const LoginView: React.FC<LoginViewProps> = ({
           {error && <div className="text-sm text-red-500 text-center">{error}</div>}
 
           <div>
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
+              className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 h-auto"
             >
               {loading ? 'Processing...' : isConfigured ? 'Unlock' : 'Create Vault'}
-            </button>
+            </Button>
           </div>
 
           {isConfigured && (
             <div className="text-center">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={onBiometricLogin}
-                className="mt-4 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                className="mt-4 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white h-auto"
               >
                 <Fingerprint className="h-5 w-5" />
                 Unlock with Biometrics
-              </button>
+              </Button>
             </div>
           )}
         </form>

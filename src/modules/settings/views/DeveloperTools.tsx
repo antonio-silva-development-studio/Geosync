@@ -1,6 +1,7 @@
 import { Check, Copy, Plus } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/Input';
 import { Select } from '../../../shared/ui/Select';
 import type { AccessToken } from '../../../types';
@@ -104,22 +105,22 @@ export function DeveloperTools() {
                 <code className="flex-1 rounded bg-white px-3 py-2 text-sm font-mono text-gray-900 shadow-sm dark:bg-black dark:text-gray-100 border border-green-200 dark:border-green-800 break-all">
                   {generatedToken}
                 </code>
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
                   onClick={() => copyToClipboard(generatedToken)}
-                  className="inline-flex items-center rounded-md bg-green-100 px-3 py-2 text-sm font-medium text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:bg-green-800 dark:text-green-100 dark:hover:bg-green-700"
+                  className="inline-flex items-center rounded-md bg-green-100 px-3 py-2 text-sm font-medium text-green-800 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:bg-green-800 dark:text-green-100 dark:hover:bg-green-700 h-auto"
                 >
                   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </button>
+                </Button>
               </div>
               <div className="mt-4">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
                   onClick={() => setGeneratedToken(null)}
-                  className="text-sm font-medium text-green-800 hover:text-green-900 dark:text-green-200 dark:hover:text-green-100 underline"
+                  className="text-sm font-medium text-green-800 hover:text-green-900 dark:text-green-200 dark:hover:text-green-100 underline h-auto p-0 hover:bg-transparent"
                 >
                   I have copied the token
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -136,15 +137,14 @@ export function DeveloperTools() {
               Tokens you have generated that can be used to access the GeoSync API.
             </p>
           </div>
-          <button
-            type="button"
+          <Button
             onClick={() => setIsCreating(true)}
             disabled={isCreating || !!generatedToken}
-            className="inline-flex items-center gap-x-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-x-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed h-auto"
           >
             <Plus className="-ml-0.5 h-5 w-5" aria-hidden="true" />
             Generate New Token
-          </button>
+          </Button>
         </div>
 
         {isCreating && !generatedToken && (
@@ -177,25 +177,24 @@ export function DeveloperTools() {
             </div>
 
             <div className="mt-4 flex gap-2 justify-end">
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 onClick={() => {
                   setIsCreating(false);
                   setNewTokenName('');
                   setExpirationDays(30);
                 }}
-                className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-white dark:ring-gray-700 dark:hover:bg-gray-700"
+                className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-white dark:ring-gray-700 dark:hover:bg-gray-700 h-auto"
               >
                 Cancel
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
                 onClick={handleCreateToken}
                 disabled={!newTokenName.trim()}
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 h-auto"
               >
                 Generate Token
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -241,14 +240,14 @@ export function DeveloperTools() {
                 </div>
               </div>
               <div className="flex flex-none items-center gap-x-4">
-                <button
-                  type="button"
+                <Button
+                  variant="outline"
                   onClick={() => handleDeleteToken(token.id)}
-                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-white dark:ring-gray-700 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 hover:ring-red-300 dark:hover:ring-red-900 transition-all"
+                  className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-white dark:ring-gray-700 dark:hover:bg-gray-700 hover:text-red-600 dark:hover:text-red-400 hover:ring-red-300 dark:hover:ring-red-900 transition-all h-auto"
                 >
                   <span className="sr-only">Revoke token</span>
                   Revoke
-                </button>
+                </Button>
               </div>
             </li>
           ))}

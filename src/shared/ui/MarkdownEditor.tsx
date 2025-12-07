@@ -3,6 +3,8 @@ import type React from 'react';
 import { useState } from 'react';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { Button } from './Button';
 
 interface MarkdownEditorProps {
   value: string;
@@ -21,30 +23,30 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange,
       )}
     >
       <div className="flex items-center border-b bg-gray-50 px-4 dark:bg-gray-800 dark:border-gray-700">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab('write')}
           className={clsx(
-            'border-b-2 px-4 py-2 text-sm font-medium transition-colors',
+            'border-b-2 px-4 py-2 text-sm font-medium transition-colors rounded-none hover:bg-transparent dark:hover:bg-transparent',
             activeTab === 'write'
               ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
               : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
           )}
         >
           Write
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="ghost"
           onClick={() => setActiveTab('preview')}
           className={clsx(
-            'border-b-2 px-4 py-2 text-sm font-medium transition-colors',
+            'border-b-2 px-4 py-2 text-sm font-medium transition-colors rounded-none hover:bg-transparent dark:hover:bg-transparent',
             activeTab === 'preview'
               ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
               : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
           )}
         >
           Preview
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 bg-white dark:bg-gray-900 min-h-0">
@@ -57,7 +59,9 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange,
           />
         ) : (
           <div className="prose prose-sm h-full max-w-none overflow-y-auto p-4 dark:prose-invert">
-            <Markdown rehypePlugins={[rehypeRaw]}>{value || '*Nothing to preview*'}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              {value || '*Nothing to preview*'}
+            </Markdown>
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { Folder, FolderOpen, Plus, Tag as TagIcon, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
+import { Button } from '../../../shared/ui/Button';
 import { ContextMenu } from '../../../shared/ui/ContextMenu';
 import { Input } from '../../../shared/ui/Input';
 import type { Project, Tag } from '../../../types';
@@ -77,22 +78,22 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
         </h2>
         {tags.length > 0 && (
           <div className="flex gap-1 overflow-x-auto no-scrollbar max-w-[120px]">
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => setFilterTagId(null)}
               className={clsx(
-                'w-2 h-2 rounded-full border border-gray-300 dark:border-gray-600 flex-shrink-0',
+                'w-2 h-2 rounded-full border border-gray-300 dark:border-gray-600 flex-shrink-0 p-0 hover:bg-transparent h-2',
                 filterTagId === null ? 'bg-gray-400' : 'bg-transparent',
               )}
               title="All Projects"
             />
             {tags.map((tag) => (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 key={tag.id}
                 onClick={() => setFilterTagId(filterTagId === tag.id ? null : tag.id)}
                 className={clsx(
-                  'w-2 h-2 rounded-full flex-shrink-0 transition-all',
+                  'w-2 h-2 rounded-full flex-shrink-0 transition-all p-0 hover:bg-transparent h-2',
                   filterTagId === tag.id
                     ? 'ring-1 ring-offset-1 ring-offset-white dark:ring-offset-gray-800'
                     : 'opacity-70 hover:opacity-100',
@@ -103,15 +104,16 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
             ))}
           </div>
         )}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setIsCreating(true)}
           disabled={!hasOrganization}
-          className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed h-8 w-8"
           title={hasOrganization ? 'New Project' : 'Create an organization first'}
         >
           <Plus className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-        </button>
+        </Button>
       </div>
 
       {isCreating && !hasOrganization && (
@@ -135,12 +137,12 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
           {tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {tags.map((tag) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={tag.id}
-                  type="button"
                   onClick={() => toggleTagSelection(tag.id)}
                   className={clsx(
-                    'px-2 py-0.5 text-xs rounded-full border transition-colors',
+                    'px-2 py-0.5 text-xs rounded-full border transition-colors h-auto font-normal',
                     selectedTagIds.includes(tag.id)
                       ? 'border-transparent text-white'
                       : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800',
@@ -148,25 +150,24 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                   style={selectedTagIds.includes(tag.id) ? { backgroundColor: tag.color } : {}}
                 >
                   {tag.name}
-                </button>
+                </Button>
               ))}
             </div>
           )}
           <div className="mt-2 flex justify-end gap-2">
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => setIsCreating(false)}
-              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 h-auto px-2 py-1"
             >
               Cancel
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               onClick={handleCreate}
-              className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+              className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 h-auto"
             >
               Create
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -192,11 +193,11 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
               },
             ]}
           >
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => onSelectProject(project)}
               className={clsx(
-                'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors h-auto justify-start',
                 currentProject?.id === project.id
                   ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
                   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700',
@@ -220,7 +221,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                   ))}
                 </div>
               )}
-            </button>
+            </Button>
           </ContextMenu>
         ))}
       </div>

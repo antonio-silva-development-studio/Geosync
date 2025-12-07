@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import type React from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/Input';
 import { useAppStore } from '../../../store/useAppStore';
 import { useAuthStore } from '../../auth/store';
@@ -87,23 +88,23 @@ export const PersonalSettings: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <div className="pt-2">
-              <button
+              <Button
                 type="submit"
                 className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Update Profile
-              </button>
+              </Button>
             </div>
           </form>
 
           <div>
             <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-4">Appearance</h3>
             <div className="grid grid-cols-3 gap-4 max-w-lg">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => setTheme('light')}
                 className={clsx(
-                  'flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all',
+                  'flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all h-auto',
                   theme === 'light'
                     ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
                     : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
@@ -120,13 +121,13 @@ export const PersonalSettings: React.FC = () => {
                 >
                   Light
                 </span>
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => setTheme('dark')}
                 className={clsx(
-                  'flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all',
+                  'flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all h-auto',
                   theme === 'dark'
                     ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
                     : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
@@ -143,13 +144,13 @@ export const PersonalSettings: React.FC = () => {
                 >
                   Dark
                 </span>
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => setTheme('system')}
                 className={clsx(
-                  'flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all',
+                  'flex flex-col items-center gap-3 rounded-lg border-2 p-4 transition-all h-auto',
                   theme === 'system'
                     ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
                     : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
@@ -169,7 +170,7 @@ export const PersonalSettings: React.FC = () => {
                 >
                   System
                 </span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -210,12 +211,12 @@ export const PersonalSettings: React.FC = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <div className="pt-2">
-              <button
+              <Button
                 type="submit"
                 className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Change Password
-              </button>
+              </Button>
             </div>
           </form>
         </div>

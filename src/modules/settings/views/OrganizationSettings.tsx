@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/Input';
 import { Select } from '../../../shared/ui/Select';
 import { useAuthStore } from '../../auth/store';
@@ -79,12 +80,12 @@ export const OrganizationSettings: React.FC = () => {
         </div>
 
         <div className="col-span-2 flex justify-end pt-4">
-          <button
+          <Button
             type="submit"
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Save Changes
-          </button>
+          </Button>
         </div>
       </form>
     </div>

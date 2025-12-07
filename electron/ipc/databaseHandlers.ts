@@ -1,7 +1,7 @@
-import crypto from 'node:crypto';
-import fs from 'node:fs';
+import * as crypto from 'node:crypto';
+import * as fs from 'node:fs';
 import { createRequire } from 'node:module';
-import path from 'node:path';
+import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PrismaClient as PrismaClientType } from '@prisma/client';
 import { app, dialog, ipcMain } from 'electron';
@@ -13,6 +13,7 @@ const { PrismaClient } = require('@prisma/client') as { PrismaClient: typeof Pri
 import { EncryptionService } from '../services/EncryptionService';
 
 const dbPath = path.join(app.getPath('userData'), 'geosync.db');
+console.log('Database path:', dbPath);
 
 function getSkeletonPath() {
   return app.isPackaged
@@ -34,7 +35,7 @@ if (!fs.existsSync(dbPath)) {
   }
 }
 
-const prisma = new PrismaClient({
+const prisma: PrismaClientType = new PrismaClient({
   datasources: {
     db: {
       url: `file:${dbPath}`,
@@ -46,6 +47,7 @@ const prisma = new PrismaClient({
 (async () => {
   try {
     await prisma.system.findFirst();
+    await prisma.accessToken.findFirst();
   } catch (error) {
     const msg = String(error);
     if (msg.includes('no such table') || msg.includes('does not exist')) {
@@ -72,10 +74,13 @@ const prisma = new PrismaClient({
 export function registerDatabaseHandlers() {
   // System/Auth Handlers
   ipcMain.handle('db:is-configured', async () => {
+    console.log('Handling db:is-configured');
     try {
       const config = await prisma.system.findUnique({ where: { id: 'config' } });
+      console.log('Config found:', !!config);
       return !!config;
     } catch (error) {
+      console.error('Error in db:is-configured:', error);
       dialog.showErrorBox(
         'Database Error',
         `Failed to check configuration: ${error instanceof Error ? error.message : String(error)}`,

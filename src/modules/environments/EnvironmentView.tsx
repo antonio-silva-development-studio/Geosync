@@ -3,6 +3,7 @@ import { Edit2, Plus, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../../shared/ui/Button';
 import { ContextMenu } from '../../shared/ui/ContextMenu';
 import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
@@ -162,22 +163,23 @@ export const EnvironmentView: React.FC = () => {
                   autoFocus
                 />
               ) : (
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  key={env.id}
                   onClick={() => setCurrentEnvironment(env)}
                   onDoubleClick={() => {
                     setEditingEnvId(env.id);
                     setEditName(env.name);
                   }}
                   className={clsx(
-                    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors h-auto',
                     currentEnvironment?.id === env.id
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
                       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700',
                   )}
                 >
                   {env.name}
-                </button>
+                </Button>
               )}
             </ContextMenu>
           ))}
@@ -195,13 +197,14 @@ export const EnvironmentView: React.FC = () => {
               />
             </form>
           ) : (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setIsCreatingEnv(true)}
-              className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+              className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 h-8 w-8"
             >
               <Plus className="h-4 w-4" />
-            </button>
+            </Button>
           )}
         </div>
       </div>

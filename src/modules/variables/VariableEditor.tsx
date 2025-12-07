@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../../shared/ui/Button';
 import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
 import { useAuthStore } from '../auth/store';
@@ -165,14 +166,13 @@ export const VariableEditor: React.FC = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">Variables</h3>
-        <button
-          type="button"
+        <Button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-500"
+          className="flex items-center gap-2 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-500 h-auto"
         >
           <Plus className="h-4 w-4" />
           Add Variable
-        </button>
+        </Button>
       </div>
 
       {currentEnvironment && (
@@ -235,14 +235,15 @@ export const VariableEditor: React.FC = () => {
                           className="w-full"
                           autoFocus
                         />
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleSaveValue(variable.id)}
-                          className="px-2 text-green-600 hover:text-green-700"
+                          className="px-2 text-green-600 hover:text-green-700 h-8 w-8"
                           title="Save"
                         >
                           <Save className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
@@ -258,8 +259,9 @@ export const VariableEditor: React.FC = () => {
                         </div>
 
                         <div className="flex items-center gap-1">
-                          <button
-                            type="button"
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={async () => {
                               // Copy logic with auth
                               if (showSecrets[variable.id]) {
@@ -299,16 +301,17 @@ export const VariableEditor: React.FC = () => {
                                 toast.error('Authentication failed');
                               }
                             }}
-                            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 h-6 w-6"
                             title="Copy Value"
                           >
                             <Copy className="h-3 w-3" />
-                          </button>
+                          </Button>
 
-                          <button
-                            type="button"
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleShowSecret(variable.id)}
-                            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 h-6 w-6"
                             title={showSecrets[variable.id] ? 'Hide' : 'Show'}
                           >
                             {showSecrets[variable.id] ? (
@@ -316,7 +319,7 @@ export const VariableEditor: React.FC = () => {
                             ) : (
                               <Lock className="h-3 w-3" />
                             )}
-                          </button>
+                          </Button>
                         </div>
 
                         {variable.isOverridden && (
@@ -329,33 +332,34 @@ export const VariableEditor: React.FC = () => {
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                     <div className="relative action-menu">
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() =>
                           setOpenActionId(openActionId === variable.id ? null : variable.id)
                         }
-                        className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+                        className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 h-8 w-8"
                       >
                         <MoreVertical className="h-4 w-4" />
-                      </button>
+                      </Button>
 
                       {openActionId === variable.id && (
                         <div className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-700">
                           <div className="py-1">
-                            <button
-                              type="button"
+                            <Button
+                              variant="ghost"
                               onClick={() => {
                                 startEditing(variable.id, variable.value || '');
                                 setOpenActionId(null);
                               }}
-                              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                              className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 justify-start h-auto font-normal rounded-none"
                             >
                               <Pencil className="mr-2 h-4 w-4" />
                               Edit Value
-                            </button>
+                            </Button>
 
-                            <button
-                              type="button"
+                            <Button
+                              variant="ghost"
                               onClick={async () => {
                                 if (
                                   !confirm(
@@ -385,11 +389,11 @@ export const VariableEditor: React.FC = () => {
                                 }
                                 setOpenActionId(null);
                               }}
-                              className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
+                              className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700 justify-start h-auto font-normal rounded-none"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       )}

@@ -1,6 +1,7 @@
 import { AlertCircle, Eye, EyeOff, Plus, Trash2, Upload, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { Button } from '../../shared/ui/Button';
 import { Input } from '../../shared/ui/Input';
 import { Select } from '../../shared/ui/Select';
 import type { Environment } from '../../types';
@@ -160,13 +161,14 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             Add Environment Variables
           </h2>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800 h-8 w-8"
           >
             <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-          </button>
+          </Button>
         </div>
 
         {/* Body */}
@@ -216,44 +218,46 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
                           onChange={(e) => updateRow(row.id, 'value', e.target.value)}
                           className="font-mono pr-10"
                         />
-                        <button
-                          type="button"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() =>
                             setShowValues((prev) => ({ ...prev, [row.id]: !prev[row.id] }))
                           }
-                          className="absolute right-2 top-[34px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="absolute right-2 top-[34px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 h-6 w-6"
                         >
                           {showValues[row.id] ? (
                             <EyeOff className="h-4 w-4" />
                           ) : (
                             <Eye className="h-4 w-4" />
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
 
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => removeRow(row.id)}
-                    className="absolute -right-2 -top-2 rounded-full bg-white p-1 text-gray-400 shadow-sm ring-1 ring-gray-200 hover:bg-red-50 hover:text-red-600 dark:bg-gray-800 dark:ring-gray-700 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                    className="absolute -right-2 -top-2 rounded-full bg-white p-1 text-gray-400 shadow-sm ring-1 ring-gray-200 hover:bg-red-50 hover:text-red-600 dark:bg-gray-800 dark:ring-gray-700 dark:hover:bg-red-900/20 dark:hover:text-red-400 h-6 w-6"
                     title="Remove"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
 
             <div className="flex items-center gap-4">
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 onClick={addRow}
-                className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 h-auto"
               >
                 <Plus className="h-4 w-4" />
                 Add Another
-              </button>
+              </Button>
 
               <div className="relative">
                 <input
@@ -265,7 +269,7 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
                 />
                 <label
                   htmlFor="env-file-upload"
-                  className="flex cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                  className="flex cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 h-9"
                 >
                   <Upload className="h-4 w-4" />
                   Import .env
@@ -294,23 +298,23 @@ export const SecretsModal: React.FC<SecretsModalProps> = ({
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 border-t bg-gray-50 px-6 py-4 dark:border-gray-800 dark:bg-gray-800/50">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={onClose}
-            className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="rounded-md px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 h-auto"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             form="secrets-form"
             disabled={isSubmitting}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 h-auto"
           >
             {isSubmitting
               ? 'Saving...'
               : `Save ${rows.filter((r) => r.key.trim()).length} Variables`}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

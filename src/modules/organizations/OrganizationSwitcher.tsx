@@ -2,6 +2,8 @@ import { Building2, Check, ChevronDown, Plus } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useProjectsStore } from '../../modules/projects/store';
+import { Button } from '../../shared/ui/Button';
 import { Input } from '../../shared/ui/Input';
 import { useAppStore } from '../../store/useAppStore';
 import type { Organization } from '../../types';
@@ -9,6 +11,7 @@ import type { Organization } from '../../types';
 export const OrganizationSwitcher: React.FC = () => {
   const { organizations, currentOrganization, setCurrentOrganization, setOrganizations } =
     useAppStore();
+  const { setCurrentProject } = useProjectsStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
@@ -45,6 +48,7 @@ export const OrganizationSwitcher: React.FC = () => {
       const updatedOrgs = [...(organizations || []), newOrg];
       setOrganizations(updatedOrgs);
       setCurrentOrganization(newOrg);
+      setCurrentProject(null); // Reset project on new org creation
       setNewOrgName('');
       setIsCreating(false);
       setIsOpen(false);
@@ -57,15 +61,16 @@ export const OrganizationSwitcher: React.FC = () => {
 
   const handleSelectOrganization = async (org: Organization) => {
     setCurrentOrganization(org);
+    setCurrentProject(null); // Reset project on org switch
     setIsOpen(false);
   };
 
   return (
     <div className="relative">
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white p-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+        className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white p-2 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 h-auto"
       >
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white">
@@ -75,30 +80,29 @@ export const OrganizationSwitcher: React.FC = () => {
             <div className="font-semibold">
               {currentOrganization?.name || 'Select Organization'}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">Enterprise</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 font-normal">Enterprise</div>
           </div>
         </div>
         <ChevronDown className="h-4 w-4 text-gray-400" />
-      </button>
+      </Button>
 
       {isOpen && (
         <>
-          <button
-            type="button"
+          <div
             className="fixed inset-0 z-10 cursor-default bg-transparent"
             onClick={() => setIsOpen(false)}
-            aria-label="Close menu"
+            aria-hidden="true"
           />
           <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
             <div className="p-2">
               <div className="mb-2 px-2 text-xs font-semibold text-gray-500">Organizations</div>
               <div className="space-y-1">
                 {(organizations || []).map((org) => (
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
                     key={org.id}
                     onClick={() => handleSelectOrganization(org)}
-                    className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+                    className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white h-auto font-normal"
                   >
                     <div className="flex items-center gap-2">
                       <div className="flex h-6 w-6 items-center justify-center rounded bg-gray-100 dark:bg-gray-800">
@@ -109,7 +113,7 @@ export const OrganizationSwitcher: React.FC = () => {
                     {currentOrganization?.id === org.id && (
                       <Check className="h-4 w-4 text-blue-500" />
                     )}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -136,30 +140,32 @@ export const OrganizationSwitcher: React.FC = () => {
                     autoFocus
                   />
                   <div className="mt-2 flex justify-end gap-2">
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setIsCreating(false)}
-                      className="text-xs text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                      className="text-xs text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white h-auto py-1 px-2"
                     >
                       Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="submit"
-                      className="rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-500"
+                      size="sm"
+                      className="rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-500 h-auto"
                     >
                       Create
-                    </button>
+                    </Button>
                   </div>
                 </form>
               ) : (
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
                   onClick={() => setIsCreating(true)}
-                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white h-auto justify-start font-normal"
                 >
                   <Plus className="h-4 w-4" />
                   Add Organization
-                </button>
+                </Button>
               )}
             </div>
           </div>

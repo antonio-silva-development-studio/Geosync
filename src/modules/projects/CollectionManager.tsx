@@ -11,10 +11,9 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../../shared/ui/Button';
 import { ApiVisualization } from './components/viewers/ApiVisualization';
 import { CollectionViewer } from './components/viewers/CollectionViewer';
-// import SwaggerUI from 'swagger-ui-react';
-// import 'swagger-ui-react/swagger-ui.css';
 import { useProjectsStore } from './store';
 
 interface ApiCollection {
@@ -181,27 +180,23 @@ export const CollectionManager: React.FC = () => {
               accept=".json,.yaml,.yml"
               className="hidden"
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-            >
+            <Button onClick={() => fileInputRef.current?.click()} className="gap-2">
               <Upload className="h-4 w-4" />
               Upload Collection
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Carousel */}
         {collections.length > 0 ? (
           <div className="relative group mb-6">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               onClick={() => scroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 p-1 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 p-1 h-auto w-auto rounded-full shadow-md border border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
             >
               <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </button>
+            </Button>
 
             <div
               ref={scrollContainerRef}
@@ -209,12 +204,12 @@ export const CollectionManager: React.FC = () => {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {collections.map((collection) => (
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
                   key={collection.id}
                   onClick={() => setSelectedCollection(collection)}
                   className={clsx(
-                    'flex-shrink-0 w-64 p-4 rounded-lg border cursor-pointer transition-all snap-start text-left',
+                    'flex-shrink-0 w-64 h-auto p-4 rounded-lg border cursor-pointer transition-all snap-start text-left flex-col items-stretch justify-start hover:bg-transparent',
                     selectedCollection?.id === collection.id
                       ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500'
                       : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-700',
@@ -236,35 +231,35 @@ export const CollectionManager: React.FC = () => {
                       {new Date(collection.createdAt).toLocaleDateString()}
                     </span>
                     <div className="flex gap-1">
-                      <button
-                        type="button"
+                      <Button
+                        variant="ghost"
                         onClick={(e) => handleDownload(e, collection)}
-                        className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors"
+                        className="p-1.5 h-auto w-auto rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
                         title="Download"
                       >
                         <Download className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant="ghost"
                         onClick={(e) => handleDelete(e, collection.id)}
-                        className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+                        className="p-1.5 h-auto w-auto rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         title="Delete"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
 
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               onClick={() => scroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 p-1 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 p-1 h-auto w-auto rounded-full shadow-md border border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronRight className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg mb-6">

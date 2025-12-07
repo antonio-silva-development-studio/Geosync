@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '../../../../lib/utils';
+import { Button } from '../../../../shared/ui/Button';
 import type { ApiSpec, Operation, Parameter } from '../../../../types/api-spec';
 import { MethodBadge } from './MethodBadge';
 
@@ -109,10 +110,10 @@ export const EndpointCard = ({ path, method, operation, spec }: EndpointCardProp
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-fade-in transition-all hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600">
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-4 p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
+        className="w-full justify-start h-auto gap-4 p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/50"
       >
         <MethodBadge method={method} />
         <code className="text-sm font-mono text-gray-700 dark:text-gray-300 flex-1 text-left">
@@ -128,7 +129,7 @@ export const EndpointCard = ({ path, method, operation, spec }: EndpointCardProp
         ) : (
           <ChevronRight className="w-5 h-5 text-gray-400" />
         )}
-      </button>
+      </Button>
 
       {isExpanded && (
         <div className="px-4 pb-4 pt-2 border-t border-gray-200 dark:border-gray-800/50 space-y-6 animate-fade-in">

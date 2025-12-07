@@ -1,4 +1,4 @@
-import path from 'node:path';
+import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow } from 'electron';
 
@@ -43,6 +43,7 @@ function createWindow() {
   });
 
   if (VITE_DEV_SERVER_URL) {
+    console.log('Loading URL:', VITE_DEV_SERVER_URL);
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
     // win.loadFile('dist/index.html')

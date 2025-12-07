@@ -1,5 +1,6 @@
 import { ChevronDown, Info, Server, Tag } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '../../../../shared/ui/Button';
 import type { PathItem, UploadedFile } from '../../../../types/api-spec';
 import { EndpointCard } from './EndpointCard';
 
@@ -152,10 +153,10 @@ export const ApiVisualization = ({ file }: ApiVisualizationProps) => {
               key={tag}
               className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => toggleSection(tag)}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                className="w-full p-4 h-auto justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
                 <div className="flex items-center gap-3">
                   <Tag className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -169,7 +170,7 @@ export const ApiVisualization = ({ file }: ApiVisualizationProps) => {
                 <ChevronDown
                   className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${openSections[tag] ? 'rotate-180' : ''}`}
                 />
-              </button>
+              </Button>
 
               {tagDescriptions[tag] && openSections[tag] && (
                 <p className="px-4 pb-2 text-sm text-gray-500 dark:text-gray-400 -mt-2 border-b border-gray-100 dark:border-gray-700/50 mb-2">
@@ -196,10 +197,10 @@ export const ApiVisualization = ({ file }: ApiVisualizationProps) => {
           {/* Untagged endpoints */}
           {untaggedEndpoints.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => toggleSection('_untagged')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                className="w-full p-4 h-auto justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
                 <div className="flex items-center gap-3">
                   <Tag className="w-4 h-4 text-gray-400" />
@@ -211,7 +212,7 @@ export const ApiVisualization = ({ file }: ApiVisualizationProps) => {
                 <ChevronDown
                   className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${openSections._untagged ? 'rotate-180' : ''}`}
                 />
-              </button>
+              </Button>
 
               {openSections._untagged && (
                 <div className="p-4 pt-0 space-y-3 animate-fade-in border-t border-gray-100 dark:border-gray-700/50 mt-2">

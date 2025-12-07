@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import type React from 'react';
-
+import { Button } from '../../../shared/ui/Button';
 export type SettingsSection =
   // Personal
   | 'personal-general'
@@ -34,11 +34,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   onClick,
   isFuture,
 }) => (
-  <button
-    type="button"
+  <Button
+    variant="ghost"
     onClick={() => onClick(id)}
     className={clsx(
-      'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+      'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors justify-start h-auto',
       isActive
         ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
         : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/50',
@@ -51,7 +51,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         Soon
       </span>
     )}
-  </button>
+  </Button>
 );
 
 const SectionHeader = ({ title }: { title: string }) => (

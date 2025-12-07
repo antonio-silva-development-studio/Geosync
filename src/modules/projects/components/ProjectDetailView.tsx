@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { Database, FileText, Layers } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
+import { Button } from '../../../shared/ui/Button';
 import type { Project } from '../../../types';
 import { EnvironmentView as EnvironmentManager } from '../../environments/EnvironmentView';
 import { CollectionManager } from '../CollectionManager';
@@ -24,11 +25,11 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ project })
 
         {/* Tabs */}
         <div className="mt-6 flex items-center gap-4 border-b border-gray-200 dark:border-gray-700">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('environments')}
             className={clsx(
-              'flex items-center gap-2 border-b-2 px-1 pb-4 text-sm font-medium transition-colors',
+              'flex items-center gap-2 border-b-2 px-1 pb-4 text-sm font-medium transition-colors rounded-none hover:bg-transparent h-auto',
               activeTab === 'environments'
                 ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
@@ -36,12 +37,12 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ project })
           >
             <Layers className="h-4 w-4" />
             Environments
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('documents')}
             className={clsx(
-              'flex items-center gap-2 border-b-2 px-1 pb-4 text-sm font-medium transition-colors',
+              'flex items-center gap-2 border-b-2 px-1 pb-4 text-sm font-medium transition-colors rounded-none hover:bg-transparent h-auto',
               activeTab === 'documents'
                 ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
@@ -49,12 +50,12 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ project })
           >
             <FileText className="h-4 w-4" />
             Documents
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('collections')}
             className={clsx(
-              'flex items-center gap-2 border-b-2 px-1 pb-4 text-sm font-medium transition-colors',
+              'flex items-center gap-2 border-b-2 px-1 pb-4 text-sm font-medium transition-colors rounded-none hover:bg-transparent h-auto',
               activeTab === 'collections'
                 ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
@@ -62,7 +63,7 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({ project })
           >
             <Database className="h-4 w-4" />
             Collections
-          </button>
+          </Button>
         </div>
       </div>
 

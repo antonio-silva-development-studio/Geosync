@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/Input';
 import { useAppStore } from '../../../store/useAppStore';
 
@@ -74,11 +75,11 @@ export function TagManager() {
           </span>
           <div className="flex gap-1">
             {colors.map((color) => (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 key={color}
                 onClick={() => setNewTagColor(color)}
-                className={`w-10 h-10 rounded-full border-2 ${
+                className={`w-10 h-10 rounded-full border-2 p-0 hover:bg-transparent ${
                   newTagColor === color ? 'border-gray-900 dark:border-white' : 'border-transparent'
                 }`}
                 style={{ backgroundColor: color }}
@@ -87,15 +88,14 @@ export function TagManager() {
             ))}
           </div>
         </div>
-        <button
-          type="button"
+        <Button
           onClick={handleAddTag}
           disabled={!newTagName.trim()}
-          className="px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mb-[1px]"
+          className="px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mb-[1px] h-auto"
         >
           <Plus size={18} />
           Add Tag
-        </button>
+        </Button>
       </div>
 
       <div className="relative">
@@ -126,13 +126,14 @@ export function TagManager() {
               <div className="w-4 h-4 rounded-full" style={{ backgroundColor: tag.color }} />
               <span className="font-medium text-gray-900 dark:text-white">{tag.name}</span>
             </div>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => handleDeleteTag(tag.id)}
-              className="text-gray-400 hover:text-red-500 transition-colors"
+              className="text-gray-400 hover:text-red-500 transition-colors h-8 w-8"
             >
               <Trash2 size={18} />
-            </button>
+            </Button>
           </div>
         ))}
         {filteredTags.length === 0 && (

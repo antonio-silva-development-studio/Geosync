@@ -2,6 +2,7 @@ import { clsx } from 'clsx';
 import { FileText, Plus, Save, Trash2 } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { Button } from '../../shared/ui/Button';
 import { Input } from '../../shared/ui/Input';
 import { MarkdownEditor } from '../../shared/ui/MarkdownEditor';
 import { useAppStore } from '../../store/useAppStore';
@@ -35,12 +36,11 @@ const DocumentEditor = ({ doc }: { doc: Document }) => {
           className="flex-1 max-w-md"
           placeholder="Document Title"
         />
-        <button
-          type="button"
+        <Button
           onClick={handleSave}
           disabled={!isDirty}
           className={clsx(
-            'flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+            'flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors h-auto',
             isDirty
               ? 'bg-blue-600 text-white hover:bg-blue-500'
               : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600',
@@ -48,7 +48,7 @@ const DocumentEditor = ({ doc }: { doc: Document }) => {
         >
           <Save className="h-4 w-4" />
           Save
-        </button>
+        </Button>
       </div>
       <div className="flex-1 overflow-hidden p-6">
         <MarkdownEditor
@@ -110,23 +110,24 @@ export const DocumentsView: React.FC = () => {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
             Documents
           </h2>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleCreate}
-            className="rounded p-1 hover:bg-gray-200 dark:hover:bg-gray-700"
+            className="rounded p-1 hover:bg-gray-200 dark:hover:bg-gray-700 h-8 w-8"
             title="New Document"
           >
             <Plus className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-          </button>
+          </Button>
         </div>
         <div className="p-2 space-y-1">
           {documents.map((doc) => (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               key={doc.id}
               onClick={() => setSelectedDocId(doc.id)}
               className={clsx(
-                'flex w-full items-center justify-between rounded-md p-2 text-sm transition-colors',
+                'flex w-full items-center justify-between rounded-md p-2 text-sm transition-colors h-auto font-normal',
                 selectedDoc?.id === doc.id
                   ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'
                   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
@@ -136,14 +137,15 @@ export const DocumentsView: React.FC = () => {
                 <FileText className="h-4 w-4 flex-shrink-0" />
                 <span className="truncate">{doc.title}</span>
               </div>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={(e) => handleDelete(doc.id, e)}
-                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500"
+                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 h-6 w-6"
               >
                 <Trash2 className="h-3 w-3" />
-              </button>
-            </button>
+              </Button>
+            </Button>
           ))}
           {documents.length === 0 && (
             <div className="px-4 py-8 text-center text-xs text-gray-500 dark:text-gray-400">
