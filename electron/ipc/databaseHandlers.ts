@@ -178,7 +178,9 @@ export function registerDatabaseHandlers() {
         // P2021 = Table does not exist
         if (error.code === 'P2021') {
           console.warn('Workspace table does not exist. Migration needed.');
-          throw new Error('Workspace feature requires database migration. Please run: npx prisma migrate deploy');
+          throw new Error(
+            'Workspace feature requires database migration. Please run: npx prisma migrate deploy',
+          );
         }
       }
       throw error;
@@ -283,7 +285,6 @@ export function registerDatabaseHandlers() {
       expiresAt.setDate(expiresAt.getDate() + expiresInDays);
     }
 
-    // @ts-expect-error - Prisma client types might be stale in IDE
     const accessToken = await prisma.accessToken.create({
       data: {
         name,
@@ -296,7 +297,6 @@ export function registerDatabaseHandlers() {
   });
 
   ipcMain.handle('db:get-access-tokens', async () => {
-    // @ts-expect-error - Prisma client types might be stale in IDE
     return await prisma.accessToken.findMany({
       select: {
         id: true,
@@ -310,7 +310,6 @@ export function registerDatabaseHandlers() {
   });
 
   ipcMain.handle('db:delete-access-token', async (_, id) => {
-    // @ts-expect-error - Prisma client types might be stale in IDE
     return await prisma.accessToken.delete({ where: { id } });
   });
 

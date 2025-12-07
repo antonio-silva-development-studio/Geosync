@@ -23,7 +23,11 @@ export function DeveloperTools() {
   }, []);
 
   useEffect(() => {
-    loadTokens();
+    // Use setTimeout to avoid calling setState synchronously within effect
+    const timer = setTimeout(() => {
+      loadTokens();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [loadTokens]);
 
   const [expirationDays, setExpirationDays] = useState<number | null>(30); // Default 30 days
@@ -92,7 +96,7 @@ export function DeveloperTools() {
               </h3>
               <div className="mt-2 text-sm text-green-700 dark:text-green-300">
                 <p>
-                  Make sure to copy your personal access token now. You won't be able to see it
+                  Make sure to copy your personal access token now. You won&apos;t be able to see it
                   again!
                 </p>
               </div>

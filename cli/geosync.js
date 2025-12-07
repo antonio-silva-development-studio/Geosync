@@ -2,19 +2,19 @@
 
 /**
  * GeoSync CLI
- * 
+ *
  * Usage:
  *   geosync run --project="Project Name" --env="dev" -- npm run dev
  *   geosync list-projects
  *   geosync get-env --project="Project Name" --env="dev"
  */
 
-import { createConnection } from 'node:net';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { createConnection } from 'node:net';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { createHash } from 'node:crypto';
 import readline from 'node:readline';
 
 const CLI_SERVER_PORT = 8765;
@@ -27,7 +27,7 @@ function loadConfig() {
   try {
     const content = readFileSync(CONFIG_FILE, 'utf-8');
     return JSON.parse(content);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -45,7 +45,7 @@ function saveConfig(config) {
 async function sendRequest(method, params = {}) {
   return new Promise((resolve, reject) => {
     const socket = createConnection(CLI_SERVER_PORT, CLI_SERVER_HOST, () => {
-      const request = JSON.stringify({ method, params }) + '\n';
+      const request = `${JSON.stringify({ method, params })}\n`;
       socket.write(request);
     });
 
@@ -73,7 +73,11 @@ async function sendRequest(method, params = {}) {
     });
 
     socket.on('error', (error) => {
-      reject(new Error(`Failed to connect to GeoSync server. Make sure the app is running. ${error.message}`));
+      reject(
+        new Error(
+          `Failed to connect to GeoSync server. Make sure the app is running. ${error.message}`,
+        ),
+      );
     });
 
     socket.setTimeout(5000);
@@ -100,7 +104,7 @@ async function getMasterKeyHash() {
     rl.question('Enter your GeoSync master password: ', (password) => {
       rl.close();
       const hash = createHash('sha256').update(password).digest('hex');
-      
+
       // Ask if user wants to save it
       const rl2 = readline.createInterface({
         input: process.stdin,
@@ -185,7 +189,9 @@ async function runCommand(args) {
       const config = loadConfig();
       const token = process.env.GEOSYNC_TOKEN || config?.token;
       if (!token) {
-        console.error('No access token found. Set GEOSYNC_TOKEN env var or configure in ~/.geosync/config.json');
+        console.error(
+          'No access token found. Set GEOSYNC_TOKEN env var or configure in ~/.geosync/config.json',
+        );
         console.error('Generate a token in GeoSync: Settings > Developer Tools');
         process.exit(1);
       }
@@ -203,7 +209,10 @@ async function runCommand(args) {
       const environment = findEnvironmentBySlug(project.environments, envSlug);
       if (!environment) {
         console.error(`Environment "${envSlug}" not found in project "${projectName}"`);
-        console.error('Available environments:', project.environments.map((e) => e.slug).join(', '));
+        console.error(
+          'Available environments:',
+          project.environments.map((e) => e.slug).join(', '),
+        );
         process.exit(1);
       }
 
@@ -230,7 +239,9 @@ async function runCommand(args) {
       const config = loadConfig();
       const token = process.env.GEOSYNC_TOKEN || config?.token;
       if (!token) {
-        console.error('No access token found. Set GEOSYNC_TOKEN env var or configure in ~/.geosync/config.json');
+        console.error(
+          'No access token found. Set GEOSYNC_TOKEN env var or configure in ~/.geosync/config.json',
+        );
         process.exit(1);
       }
 
@@ -239,7 +250,9 @@ async function runCommand(args) {
 
       console.log('\nProjects:');
       projects.forEach((project) => {
-        console.log(`  - ${project.name}${project.organization ? ` (${project.organization})` : ''}`);
+        console.log(
+          `  - ${project.name}${project.organization ? ` (${project.organization})` : ''}`,
+        );
         project.environments.forEach((env) => {
           console.log(`    └─ ${env.slug}`);
         });
@@ -262,7 +275,9 @@ async function runCommand(args) {
       const config = loadConfig();
       const token = process.env.GEOSYNC_TOKEN || config?.token;
       if (!token) {
-        console.error('No access token found. Set GEOSYNC_TOKEN env var or configure in ~/.geosync/config.json');
+        console.error(
+          'No access token found. Set GEOSYNC_TOKEN env var or configure in ~/.geosync/config.json',
+        );
         process.exit(1);
       }
 
@@ -344,4 +359,3 @@ runCommand(args).catch((error) => {
   console.error('Error:', error.message);
   process.exit(1);
 });
-

@@ -1,9 +1,9 @@
 import { Briefcase, Plus } from 'lucide-react';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Select } from '../../shared/ui/Select';
 import { Input } from '../../shared/ui/Input';
+import { Select } from '../../shared/ui/Select';
 
 interface Workspace {
   id: string;
@@ -33,7 +33,7 @@ export const WorkspaceSwitcher: React.FC = () => {
     }
   };
 
-  const loadWorkspaces = async () => {
+  const loadWorkspaces = useCallback(async () => {
     try {
       const data = await window.electronAPI.getWorkspaces();
       // Double check - ensure it's always an array
@@ -45,9 +45,10 @@ export const WorkspaceSwitcher: React.FC = () => {
       }
       const workspacesArray = data;
       setWorkspaces(workspacesArray);
-      const active = workspacesArray.find((w: Workspace) => w.isActive) || workspacesArray[0] || null;
+      const active =
+        workspacesArray.find((w: Workspace) => w.isActive) || workspacesArray[0] || null;
       setActiveWorkspace(active);
-      
+
       // If no workspaces exist, create a default one
       // The handler will check for duplicates, so it's safe to call
       if (workspacesArray.length === 0) {
@@ -60,7 +61,9 @@ export const WorkspaceSwitcher: React.FC = () => {
           const updatedData = await window.electronAPI.getWorkspaces();
           const updatedArray = Array.isArray(updatedData) ? updatedData : [];
           setWorkspaces(updatedArray);
-          setActiveWorkspace(updatedArray.find((w: Workspace) => w.isActive) || updatedArray[0] || null);
+          setActiveWorkspace(
+            updatedArray.find((w: Workspace) => w.isActive) || updatedArray[0] || null,
+          );
         } catch (createError) {
           console.error('Failed to create default workspace:', createError);
           // If workspace creation fails (e.g., migration not run), just continue without workspace
@@ -73,7 +76,9 @@ export const WorkspaceSwitcher: React.FC = () => {
           const updatedData = await window.electronAPI.getWorkspaces();
           const updatedArray = Array.isArray(updatedData) ? updatedData : [];
           setWorkspaces(updatedArray);
-          setActiveWorkspace(updatedArray.find((w: Workspace) => w.isActive) || updatedArray[0] || null);
+          setActiveWorkspace(
+            updatedArray.find((w: Workspace) => w.isActive) || updatedArray[0] || null,
+          );
         } catch (switchError) {
           console.error('Failed to switch workspace:', switchError);
           // Continue anyway
@@ -86,11 +91,11 @@ export const WorkspaceSwitcher: React.FC = () => {
       setWorkspaces([]);
       setActiveWorkspace(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadWorkspaces().finally(() => setIsLoading(false));
-  }, []);
+  }, [loadWorkspaces]);
 
   const handleCreateWorkspace = async () => {
     if (!newWorkspaceName.trim()) return;
@@ -202,4 +207,3 @@ export const WorkspaceSwitcher: React.FC = () => {
     </div>
   );
 };
-

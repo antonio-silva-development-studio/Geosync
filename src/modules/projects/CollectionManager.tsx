@@ -79,7 +79,11 @@ export const CollectionManager: React.FC = () => {
 
   useEffect(() => {
     if (currentProject) {
-      loadCollections();
+      // Use setTimeout to avoid calling setState synchronously within effect
+      const timer = setTimeout(() => {
+        loadCollections();
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [currentProject, loadCollections]);
 
@@ -289,6 +293,7 @@ export const CollectionManager: React.FC = () => {
                     content.includes('"swagger":');
 
                   if (isOpenApi) {
+                    // biome-ignore lint/suspicious/noExplicitAny: OpenAPI spec can have various structures
                     let specToRender: any = null;
                     if (typeof content === 'string') {
                       try {

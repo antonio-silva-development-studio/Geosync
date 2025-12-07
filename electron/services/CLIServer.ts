@@ -1,6 +1,6 @@
+import crypto from 'node:crypto';
 import { createServer, type Server } from 'node:net';
 import type { PrismaClient } from '@prisma/client';
-import crypto from 'node:crypto';
 import { EncryptionService } from './EncryptionService';
 
 interface CLIServerConfig {
@@ -46,13 +46,13 @@ export class CLIServer {
             try {
               const request: CLIRequest = JSON.parse(line);
               const response = await this.handleRequest(request);
-              socket.write(JSON.stringify(response) + '\n');
+              socket.write(`${JSON.stringify(response)}\n`);
             } catch (error) {
               socket.write(
-                JSON.stringify({
+                `${JSON.stringify({
                   success: false,
                   error: error instanceof Error ? error.message : String(error),
-                }) + '\n',
+                })}\n`,
               );
             }
           }
@@ -120,7 +120,6 @@ export class CLIServer {
 
   private async verifyToken(token: string): Promise<CLIResponse> {
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    // @ts-expect-error - Prisma client types might be stale in IDE
     const accessToken = await this.prisma.accessToken.findUnique({
       where: { tokenHash },
     });
@@ -133,7 +132,6 @@ export class CLIServer {
       return { success: false, error: 'Token expired' };
     }
 
-    // @ts-expect-error - Prisma client types might be stale in IDE
     await this.prisma.accessToken.update({
       where: { id: accessToken.id },
       data: { lastUsedAt: new Date() },
@@ -143,7 +141,6 @@ export class CLIServer {
   }
 
   private async listProjects(tokenId: string): Promise<CLIResponse> {
-    // @ts-expect-error - Prisma client types might be stale in IDE
     const token = await this.prisma.accessToken.findUnique({ where: { id: tokenId } });
     if (!token || (token.expiresAt && new Date(token.expiresAt) < new Date())) {
       return { success: false, error: 'Invalid or expired token' };
@@ -173,7 +170,6 @@ export class CLIServer {
     environmentSlug: string,
     masterKeyHash?: string,
   ): Promise<CLIResponse> {
-    // @ts-expect-error - Prisma client types might be stale in IDE
     const token = await this.prisma.accessToken.findUnique({ where: { id: tokenId } });
     if (!token || (token.expiresAt && new Date(token.expiresAt) < new Date())) {
       return { success: false, error: 'Invalid or expired token' };
@@ -191,7 +187,9 @@ export class CLIServer {
     }
 
     const definitions = await this.prisma.variableDefinition.findMany({ where: { projectId } });
-    const values = await this.prisma.variableValue.findMany({ where: { environmentId: environment.id } });
+    const values = await this.prisma.variableValue.findMany({
+      where: { environmentId: environment.id },
+    });
 
     // If master key is provided, decrypt values
     if (masterKeyHash) {
@@ -247,4 +245,3 @@ export class CLIServer {
     };
   }
 }
-

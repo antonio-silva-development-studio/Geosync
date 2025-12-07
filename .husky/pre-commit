@@ -1,1 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Add node_modules/.bin to PATH
+export PATH="$PATH:$(pwd)/node_modules/.bin"
+
+# Run lint-staged
 npx lint-staged

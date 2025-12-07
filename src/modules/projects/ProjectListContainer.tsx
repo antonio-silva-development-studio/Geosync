@@ -7,8 +7,15 @@ import { useProjectsStore } from './store';
 
 export const ProjectListContainer: React.FC = () => {
   const { currentOrganization, tags, fetchTags } = useAppStore();
-  const { projects, currentProject, setProjects, setCurrentProject, addProject, deleteProject, updateProject } =
-    useProjectsStore();
+  const {
+    projects,
+    currentProject,
+    setProjects,
+    setCurrentProject,
+    addProject,
+    deleteProject,
+    updateProject,
+  } = useProjectsStore();
 
   useEffect(() => {
     const loadProjects = async () => {

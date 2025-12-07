@@ -130,7 +130,6 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
             onChange={(e) => setNewProjectName(e.target.value)}
             onBlur={() => !newProjectName && setIsCreating(false)}
             onKeyDown={handleKeyDown}
-            // biome-ignore lint/a11y/noAutofocus: input focus on creation
             autoFocus
           />
           {tags.length > 0 && (
@@ -229,19 +228,22 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
       {/* Tags Management Modal */}
       {editingTagsProjectId && (
         <>
-          <div
+          <button
+            type="button"
             className="fixed inset-0 z-40 bg-black/50"
             onClick={() => {
               setEditingTagsProjectId(null);
               setEditingTagIds([]);
             }}
+            aria-label="Close modal"
           />
           <div className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
               Manage Tags
             </h3>
             <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-              Select tags to assign to this project. Use tags as context of work (e.g., "Agência X", "Pessoal", "Freelance").
+              Select tags to assign to this project. Use tags as context of work (e.g.,
+              &quot;Agência X&quot;, &quot;Pessoal&quot;, &quot;Freelance&quot;).
             </p>
             <div className="mb-4 max-h-64 space-y-2 overflow-y-auto">
               {tags.length === 0 ? (
@@ -266,10 +268,7 @@ export const ProjectListView: React.FC<ProjectListViewProps> = ({
                       }}
                       className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: tag.color }}
-                    />
+                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: tag.color }} />
                     <span className="text-sm text-gray-700 dark:text-gray-300">{tag.name}</span>
                   </label>
                 ))

@@ -1,6 +1,6 @@
 import { FileText, Folder, Layers, Search, X } from 'lucide-react';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useProjectsStore } from '../projects/store';
 
@@ -20,14 +20,38 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { organizations, currentOrganization, variables, documents } = useAppStore();
+  const { variables, documents } = useAppStore();
   const { projects, setCurrentProject } = useProjectsStore();
+
+  const handleSelectResult = useCallback(
+    (result: SearchResult) => {
+      if (result.type === 'project' && result.id) {
+        const project = (projects || []).find((p) => p.id === result.id);
+        if (project) {
+          setCurrentProject(project);
+          onClose();
+        }
+      } else if (result.projectId) {
+        // For variables and documents, switch to the project first
+        const project = (projects || []).find((p) => p.id === result.projectId);
+        if (project) {
+          setCurrentProject(project);
+          onClose();
+          // TODO: Could navigate to specific variable/document if needed
+        }
+      }
+    },
+    [projects, setCurrentProject, onClose],
+  );
 
   useEffect(() => {
     if (!isOpen) {
-      setQuery('');
-      setResults([]);
-      setSelectedIndex(0);
+      // Use setTimeout to avoid calling setState synchronously within effect
+      setTimeout(() => {
+        setQuery('');
+        setResults([]);
+        setSelectedIndex(0);
+      }, 0);
       return;
     }
 
@@ -47,11 +71,14 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, results, selectedIndex, onClose]);
+  }, [isOpen, results, selectedIndex, onClose, handleSelectResult]);
 
   useEffect(() => {
     if (!query.trim()) {
-      setResults([]);
+      // Use setTimeout to avoid calling setState synchronously within effect
+      setTimeout(() => {
+        setResults([]);
+      }, 0);
       return;
     }
 
@@ -103,27 +130,12 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
       }
     });
 
-    setResults(searchResults);
-    setSelectedIndex(0);
+    // Use setTimeout to avoid calling setState synchronously within effect
+    setTimeout(() => {
+      setResults(searchResults);
+      setSelectedIndex(0);
+    }, 0);
   }, [query, projects, variables, documents]);
-
-  const handleSelectResult = (result: SearchResult) => {
-    if (result.type === 'project' && result.id) {
-      const project = (projects || []).find((p) => p.id === result.id);
-      if (project) {
-        setCurrentProject(project);
-        onClose();
-      }
-    } else if (result.projectId) {
-      // For variables and documents, switch to the project first
-      const project = (projects || []).find((p) => p.id === result.projectId);
-      if (project) {
-        setCurrentProject(project);
-        onClose();
-        // TODO: Could navigate to specific variable/document if needed
-      }
-    }
-  };
 
   const getIcon = (type: SearchResult['type']) => {
     switch (type) {
@@ -141,11 +153,7 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/50"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} aria-hidden="true" />
 
       {/* Search Modal */}
       <div className="fixed left-1/2 top-20 z-50 w-full max-w-2xl -translate-x-1/2">
@@ -159,7 +167,6 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search projects, variables, documents..."
               className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 outline-none dark:text-white dark:placeholder-gray-500"
-              autoFocus
             />
             <button
               type="button"
@@ -219,7 +226,9 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
           <div className="border-t border-gray-200 px-4 py-2 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
             <div className="flex items-center justify-between">
               <span>Use ↑↓ to navigate, Enter to select, Esc to close</span>
-              <span>{results.length} result{results.length !== 1 ? 's' : ''}</span>
+              <span>
+                {results.length} result{results.length !== 1 ? 's' : ''}
+              </span>
             </div>
           </div>
         </div>
@@ -227,4 +236,3 @@ export const GlobalSearch: React.FC<{ isOpen: boolean; onClose: () => void }> = 
     </>
   );
 };
-
